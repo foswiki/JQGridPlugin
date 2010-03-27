@@ -12,7 +12,7 @@ JSP, !ColdFusion, and Perl. For more read the [[%PUBURLPATH%/%SYSTEMWEB%/JQGridP
 ---++ Source
 
 Homepage: http://www.trirand.com/blog/ %BR%
-Author(s): Tony Tomov 5BR%
+Author(s): Tony Tomov %BR%
 Version: 3.6.3
 
 ---++ Examples
