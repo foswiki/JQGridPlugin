@@ -56,7 +56,7 @@ sub new {
     puburl => '%PUBURLPATH%/%SYSTEMWEB%/JQGridPlugin',
     javascript => ['jquery.jqgrid.js', 'jquery.jqgrid.init.js'],
     css => ['css/jquery.jqgrid.css'],
-    dependencies => ['ui', 'metadata', 'livequery', 'JQUERYPLUGIN::THEME', 'JQGRIDPLUGIN::GRID::LANG'], 
+    dependencies => ['ui', 'metadata', 'livequery', 'JQUERYPLUGIN::THEME', 'JQGRIDPLUGIN::LANG'], 
   ), $class);
 
   $this->{fieldNameMap} = {
@@ -83,10 +83,10 @@ sub init {
 
   # open matching localization file if it exists
   my $langTag = $this->{session}->i18n->language();
-  my $localePrefix = $Foswiki::cfg{SystemWebName}.'/JQGridPlugin/plugins/grid/i18n';
+  my $localePrefix = 'i18n';
   my $localePath = $localePrefix.'/grid.locale-'.$langTag.'.js';
   $localePath = $localePrefix.'/grid.locale-en.js' 
-    unless -f $Foswiki::cfg{PubDir}.'/'.$localePath;
+    unless -f $this->{puburl}.'/'.$localePath;
 
   my $header .= $this->renderJS($localePath);
   Foswiki::Func::addToZone('body', "JQGRIDPLUGIN::LANG", $header, 'JQUERYPLUGIN::UI');
