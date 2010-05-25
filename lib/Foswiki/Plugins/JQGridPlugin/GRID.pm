@@ -54,7 +54,7 @@ sub new {
     author => 'Tony Tomov',
     homepage => 'http://www.trirand.com/blog/',
     puburl => '%PUBURLPATH%/%SYSTEMWEB%/JQGridPlugin',
-    javascript => ['jquery.jqgrid.js', 'jquery.jqgrid.init.js'],
+    javascript => ['jquery.jqgrid.js', 'jquery.jqgrid.init.js', 'jquery.fmatter.js'],
     css => ['css/jquery.jqgrid.css'],
     dependencies => ['ui', 'metadata', 'livequery', 'JQUERYPLUGIN::THEME', 'JQGRIDPLUGIN::LANG'], 
   ), $class);
