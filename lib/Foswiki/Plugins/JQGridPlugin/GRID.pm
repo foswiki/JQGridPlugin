@@ -54,15 +54,22 @@ sub new {
     author => 'Tony Tomov',
     homepage => 'http://www.trirand.com/blog/',
     puburl => '%PUBURLPATH%/%SYSTEMWEB%/JQGridPlugin',
-    javascript => ['jquery.jqgrid.js', 'jquery.jqgrid.init.js', 'jquery.fmatter.js'],
+    javascript => ['jquery.jqgrid.js', 'jquery.jqgrid.init.js'],
     css => ['css/jquery.jqgrid.css'],
-    dependencies => ['ui', 'metadata', 'livequery', 'JQUERYPLUGIN::THEME', 'JQGRIDPLUGIN::LANG'], 
+    dependencies => ['ui', 'metadata', 'livequery', 'JQUERYPLUGIN::THEME', 'JQUERYPLUGIN::GRID::LANG'], 
   ), $class);
 
   $this->{fieldNameMap} = {
-    'topic' => 'Topic', 'Topic' => 'topic',
-    'info.date' => 'Modified', 'Modified' => 'info.date',
-    'info.author' => 'Changed By', 'Changed By' => 'info.author',
+    'topic' => 'Topic', 
+    'Topic' => 'topic',
+    'info.date' => 'Modified', 
+    'Modified' => 'info.date',
+    'info.date' => 'Changed', 
+    'Changed' => 'info.date',
+    'info.author' => 'By', 
+    'By' => 'info.author',
+    'info.author' => 'Author', 
+    'Author' => 'info.author',
   };
 
   return $this;
@@ -83,13 +90,12 @@ sub init {
 
   # open matching localization file if it exists
   my $langTag = $this->{session}->i18n->language();
-  my $localePrefix = 'i18n';
-  my $localePath = $localePrefix.'/grid.locale-'.$langTag.'.js';
-  $localePath = $localePrefix.'/grid.locale-en.js' 
-    unless -f $this->{puburl}.'/'.$localePath;
+  my $localeFile = 'i18n/grid.locale-'.$langTag.'.js';
+  $localeFile = 'i18n/grid.locale-en.js' 
+    unless -f $this->{puburl}.'/'.$localeFile;
 
-  my $header .= $this->renderJS($localePath);
-  Foswiki::Func::addToZone('body', "JQGRIDPLUGIN::LANG", $header, 'JQUERYPLUGIN::UI');
+  my $header .= $this->renderJS($localeFile);
+  Foswiki::Func::addToZone('body', "JQUERYPLUGIN::GRID::LANG", $header);
 }
 
 =begin TML
@@ -107,12 +113,10 @@ sub handleGrid {
   my $theWeb = $params->{web} || $web;
   my $theForm = $params->{form} || '';
   my $theCols = $params->{columns};
-  my $theTitles = $params->{titles};
   my $theRows = $params->{rows} || 20;
   my $theRowNumbers = $params->{rownumbers} || 'off';
   my $theInclude = $params->{include};
   my $theExclude = $params->{exclude};
-  my $theEditable = $params->{editable} || 'off';
   my $theFilterbar = $params->{filterbar} || 'off';
   my $theToolbar = $params->{toolbar} || 'off'; # navGrid
   my $theSort = $params->{sort};
@@ -125,23 +129,62 @@ sub handleGrid {
   my $theScroll = $params->{scroll} || 'off';
   my $theRowList = $params->{rowlist} || '5, 10, 20, 30, 40, 50, 100';
 
+  # SMELL: unused for now
+  #my $theEditable = $params->{editable} || 'off';
+
   # sanitize params
   $theRowNumbers = ($theRowNumbers eq 'on')?'true':'false';
   my $gridId = "jqGrid".Foswiki::Plugins::JQueryPlugin::Plugins::getRandom();
   my $pagerId = "jqGridPager".Foswiki::Plugins::JQueryPlugin::Plugins::getRandom();
 
-  my $filterToolbar = ($theFilterbar eq 'on'?'.filterToolbar()':'');
-  my $navGrid = ($theToolbar eq 'on'?'.navGrid(\'#'.$pagerId.'\',{search:false})':'');
+  my $filterToolbar = '';
+  if ($theFilterbar eq 'on') {
+    $filterToolbar = <<"HERE";
+myGrid.jqGrid('filterToolbar'); 
+HERE
+  }
+  my $navGrid = '';
+  if ($theToolbar eq 'on') {
+    $navGrid = <<"HERE";
+myGrid.jqGrid('navGrid', '#$pagerId', {
+  search:false, 
+  edit:false, 
+  del:false, 
+  refresh:false, 
+  add:false
+});
+myGrid.jqGrid('navButtonAdd', '#$pagerId', {
+  caption:'%MAKETEXT{"Clear"}%',
+  title:'%MAKETEXT{"Clear Search"}%',
+  buttonicon:'ui-icon-refresh', 
+  onClickButton:function() { 
+    myGrid[0].clearToolbar();
+  } 
+}); 
+HERE
+  }
+
+# SMELL: parked code
+#
+# myGrid.jqGrid('navButtonAdd', '#$pagerId', {
+#   caption:'%MAKETEXT{"Search"}%',
+#   title:'%MAKETEXT{"Toggle Search"}%', 
+#   buttonicon:'ui-icon-search',
+#   onClickButton:function() { 
+#     myGrid[0].toggleToolbar(); 
+#   } 
+# }); 
 
   my $sortOrder = ($theReverse eq 'on'?'desc':'asc');
 
+#    "foswiki_filtertoolbar:".($theFilterbar eq 'on'?'true':'false'),
+#    "foswiki_navgrid:".($theToolbar eq 'on'?'true':'false'),
   my @metadata = (
-    "foswiki_filtertoolbar:".($theFilterbar eq 'on'?'true':'false'),
-    "foswiki_navgrid:".($theToolbar eq 'on'?'true':'false'),
     "rowNum:$theRows",
     "rowList:[$theRowList]",
     "sortorder: '$sortOrder'",
     "rownumbers: $theRowNumbers",
+    "cellLayout: 18", # SMELL: this is depending on the skin's css :(
   );
   
   push @metadata, "pager:'$pagerId'" if $thePager eq 'on';
@@ -189,25 +232,54 @@ sub handleGrid {
       @selectedFields = grep {!/^($theExclude)$/} @selectedFields;
     }
 
-    my $colNames;
-    if ($theTitles) {
-      $colNames = "['".join("','", split(/\s*,\s*/, $theTitles))."']";
-    } else {
-      $colNames = "['".join("','", @selectedFields)."']";
-    }
-    push @metadata, "colNames: $colNames";
+    # get model
+    my @colModels;
+    foreach my $fieldName (@selectedFields) {
 
-    my @colModel;
-    foreach my $fieldName (@selectedFields) { 
+      my @colModel;
+      push @colModel, "name:'$fieldName'";
+
+      # title
+      my $fieldTitle = $params->{$fieldName.'_title'};
+      $fieldTitle = $fieldName unless defined $fieldTitle;
+      push @colModel, "label:'$fieldTitle'";
+
+      # resizable
+      my $fieldResizable = $params->{$fieldName.'_resizable'};
+      $fieldResizable = 'on' unless defined $fieldResizable;
+      $fieldResizable = ($fieldResizable eq 'on')?'true':'false';
+      push @colModel, "resizable:$fieldResizable";
+
+      # align
+      my $fieldAlign = $params->{$fieldName.'_align'};
+      $fieldAlign = 'left' unless defined $fieldAlign;
+      push @colModel, "align:'$fieldAlign'";
+
+      # width
+      my $fieldWidth = $params->{$fieldName.'_width'};
+      push @colModel, "width:$fieldWidth" if defined $fieldWidth;
+
+      # search
+      my $fieldSearch = $params->{$fieldName.'_search'};
+      $fieldSearch = 'on' unless defined $fieldSearch;
+      #$fieldSearch = 'false' if $this->column2FieldName($fieldName) eq 'info.date';
+      $fieldSearch = 'false' if $this->column2FieldName($fieldName) =~ /Image|Photo|Icon/;
+      $fieldSearch = ($fieldSearch eq 'on')?'true':'false';
+      push @colModel, "search:$fieldSearch";
+
+      # colmodel
+      push @colModels, '{ '.join(', ', @colModel).'}';
+
       $theSort = $fieldName unless $theSort;
-      my $col = "{name:'".$fieldName."', index:'".$fieldName."'}";
-      push @colModel, $col;
     }
-    push @metadata, 'colModel: ['.join(",\n", @colModel).']';
 
+    push @metadata, 'colModel: ['.join(",\n", @colModels).']';
+
+    my $baseWeb = $this->{session}->{webName};
+    my $baseTopic = $this->{session}->{topicName};
     my $gridConnectorUrl = Foswiki::Func::getScriptUrl('JQGridPlugin', 'gridconnector', 'rest',
-      theweb=>$theWeb,
-      thetopic=>$topic,
+      topic=>$baseWeb.'.'.$baseTopic,
+      web=>$theWeb,
       query=>$theQuery,
       columns=>join(',', @selectedFields),
     );
@@ -218,9 +290,11 @@ sub handleGrid {
 
     my $metadata = '{'.join(",\n", @metadata)."}\n";
     my $jsTemplate = <<"HERE";
-<script type="text/javascript">
-jQuery(document).ready(function(){ 
-  jQuery('#$gridId').jqGrid($metadata)$filterToolbar$navGrid;
+<script>
+jQuery(function(\$) {
+  var myGrid = \$('#$gridId').jqGrid($metadata);
+  $filterToolbar;
+  $navGrid;
 }); 
 </script>
 HERE
@@ -260,7 +334,11 @@ sub restGridConnector {
     $fieldName = $this->column2FieldName($fieldName);
 
     foreach my $value (split(/\s*,\s*/, $values)) {
-      $query .= " AND lc($fieldName)=~lc('$value')";
+      if ($value =~ /^-(.*)$/) {
+        $query .= " AND !(lc($fieldName)=~lc('$1'))";
+      } else {
+        $query .= " AND lc($fieldName)=~lc('$value')";
+      }
     }
   }
 
@@ -269,8 +347,8 @@ sub restGridConnector {
 
   my $reverse = ($sord eq 'desc'?'on':'off');
 
-  my $web = $request->param('theweb') || $this->{session}->{webName};
-  my $topic = $request->param('thetopic') || $this->{session}->{topicName};
+  my $web = $request->param('web') || $this->{session}->{webName};
+  my $topic = $this->{session}->{topicName};
 
   my $count = $this->count($web, $query);
   unless (defined $count) {
@@ -399,22 +477,28 @@ sub search {
     foreach my $fieldName (@selectedFields) {
       my $cell = '';
       $fieldName = $this->column2FieldName($fieldName);
-      if ($fieldName =~ /Image|Photo/) {
+      if ($fieldName eq 'Icon') {
+        $cell .= '<img src=\'$expand('.$fieldName.')\' width=\'16\' />';
+      } elsif ($fieldName =~ /Image|Photo/) {
         if ($context->{ImagePluginEnabled}) {
-          $cell .= '$percntIMAGE{\"$expand('.$fieldName.')\" size=\"135\" type=\"plain\" warn=\"off\"}$percnt';
+          $cell .= '$percntIMAGE{\"$expand('.$fieldName.')\" size=\"80\" type=\"plain\" warn=\"off\"}$percnt';
         } else {
-          $cell .= '<img src=\'$expand('.$fieldName.')\' style=\'max-width:135px\' />';
+          $cell .= '<img src=\'$expand('.$fieldName.')\' style=\'max-width:80px\' />';
         }
       } elsif ($fieldName =~ /info.author/) {
         $cell .= '[[%USERSWEB%.$expand(info.author)][$expand(info.author)]]';
       } elsif ($fieldName =~ /info.date|createdate/) {
         $cell .= '$formatTime('.$fieldName.')';
       } elsif ($fieldName eq 'topic') {
-        $cell .= '[[$web.$topic][$topic]]';
+        $cell .= '[[$web.$topic][$expand(topictitle or topic)]]';
       } else {
-        $cell .= '$expand('.$fieldName.')';
+        if ($context->{FlexFormPluginEnabled}) {
+          $cell .= '$percntRENDERFORDISPLAY{topic=\"$web.$topic\" field=\"'.$fieldName.'\" format=\"$value\"}$percnt';
+        } else {
+          $cell .= '$expand('.$fieldName.')';
+        }
       }
-      $tml .= '<cell><![CDATA['.$cell.']]></cell>'."\n";
+      $tml .= '<cell><![CDATA['.$cell.' ]]></cell>'."\n"; # SMELL extra space behind cell needed to work around bug in Render::getRenderedVerision
     }
     $tml .= '</row>"}%';
 
