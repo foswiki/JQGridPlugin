@@ -1,4 +1,3 @@
 FOSWIKI_ROOT?=~/foswiki/trunk/core
--include $(FOSWIKI_ROOT)/pub/System/JQueryPlugin/Makefile.include
-
+include $(FOSWIKI_ROOT)/pub/System/JQueryPlugin/Makefile.include
 

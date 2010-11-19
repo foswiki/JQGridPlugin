@@ -1,25 +1,28 @@
-TARGET=\
-  jquery.jqgrid.js \
-  jquery.jqgrid.init.js
-
+FOSWIKI_ROOT?=~/foswiki/trunk/core
+TARGET=jquery.jqgrid.js jquery.jqgrid.init.js
 SUBDIRS=i18n css
 
 JSSOURCE=\
-  grid.base.js \
-  grid.common.js \
-  grid.formedit.js \
-  grid.inlinedit.js \
-  grid.celledit.js \
-  grid.subgrid.js \
-  grid.treegrid.js \
-  grid.custom.js \
-  grid.postext.js \
-  grid.tbltogrid.js \
-  grid.setcolumns.js \
-  grid.import.js \
-  jquery.fmatter.js \
-  JsonXml.js \
-  jquery.searchFilter.js
+   ui.multiselect.js \
+   grid.base.js\
+   jquery.fmatter.js\
+   jquery.additional-fmatter.js\
+   grid.custom.js\
+   grid.common.js\
+   grid.formedit.js\
+   jquery.searchFilter.js\
+   grid.inlinedit.js\
+   grid.celledit.js\
+   jqModal.js\
+   jqDnR.js\
+   grid.subgrid.js\
+   grid.treegrid.js\
+   grid.import.js\
+   JsonXml.js\
+   grid.setcolumns.js\
+   grid.postext.js\
+   grid.tbltogrid.js\
+   grid.jqueryui.js
 
 -include Makefile.include
 

@@ -1,6 +1,6 @@
 data/System/JQGridPlugin.txt 0644
-lib/Foswiki/Plugins/JQGridPlugin.pm 0644
 lib/Foswiki/Plugins/JQGridPlugin/GRID.pm 0644
+lib/Foswiki/Plugins/JQGridPlugin.pm 0644
 pub/System/JQGridPlugin/css/ellipsis-xbl.xml 0644
 pub/System/JQGridPlugin/css/jquery.jqgrid.css 0644
 pub/System/JQGridPlugin/css/jquery.jqgrid.css.gz 0644
@@ -50,6 +50,8 @@ pub/System/JQGridPlugin/i18n/grid.locale-el.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-en.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-en.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-en.uncompressed.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-es.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-es.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-fa.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-fa.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-fa.uncompressed.js 0644
@@ -62,6 +64,8 @@ pub/System/JQGridPlugin/i18n/grid.locale-fr.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-he.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-he.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-he.uncompressed.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-hu.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-hu.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-is.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-is.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-is.uncompressed.js 0644
@@ -95,6 +99,8 @@ pub/System/JQGridPlugin/i18n/grid.locale-ro.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-ru.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-ru.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-ru.uncompressed.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-sk.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-sk.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sp.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sp.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sp.uncompressed.js 0644
@@ -111,6 +117,9 @@ pub/System/JQGridPlugin/i18n/Makefile 0644
 pub/System/JQGridPlugin/jqDnR.js 0644
 pub/System/JQGridPlugin/jqgriddocs.pdf 0644
 pub/System/JQGridPlugin/jqModal.js 0644
+pub/System/JQGridPlugin/jquery.additional-fmatter.js 0644
+pub/System/JQGridPlugin/jquery.additional-fmatter.uncompressed.js 0644
+pub/System/JQGridPlugin/jquery.fmatter.js 0644
 pub/System/JQGridPlugin/jquery.jqgrid.init.js 0644
 pub/System/JQGridPlugin/jquery.jqgrid.init.js.gz 0644
 pub/System/JQGridPlugin/jquery.jqgrid.init.uncompressed.js 0644

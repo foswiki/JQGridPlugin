@@ -17,9 +17,10 @@ use strict;
 use warnings;
 
 our $VERSION = '$Rev$';
-our $RELEASE = '0.2.1';
+our $RELEASE = '0.3';
 our $SHORTDESCRIPTION = 'jQuery grid widget for Foswiki';
 our $NO_PREFS_IN_TOPIC = 1;
+our $doInit = 0;
 
 use Foswiki::Plugins::JQueryPlugin ();
 
@@ -31,6 +32,24 @@ sub initPlugin {
   Foswiki::Func::registerTagHandler('GRID', \&handleGrid);
   Foswiki::Func::registerRESTHandler('gridconnector', \&restGridConnector);
 
+  my $selector = Foswiki::Func::getPreferencesValue('JQGRIDPLUGIN_TABLE2GRID');# || '.foswikiTable';
+  if ($selector) {
+    $doInit = 1; # delay createplugin 
+    Foswiki::Func::addToZone('head', 'JQGRIDPLUGIN::META', <<HERE);
+<meta name='foswiki.JQGridPlugin.table2Grid' content='$selector' />
+HERE
+  }
+
+  return 1;
+}
+
+sub afterCommonTagsHandler {
+
+  return unless $doInit;
+  $doInit = 0;
+
+  my $session = $Foswiki::Plugins::SESSION;
+  Foswiki::Plugins::JQueryPlugin::createPlugin('Grid', $session);
 }
 
 sub handleGrid {

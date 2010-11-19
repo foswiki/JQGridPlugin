@@ -1,5 +1,4 @@
-TARGET=\
-  jquery.jqgrid.css
+TARGET=jquery.jqgrid.css
 
 -include ../Makefile.include
 

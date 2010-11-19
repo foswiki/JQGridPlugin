@@ -21,6 +21,8 @@ use Foswiki::Plugins::JQueryPlugin::Plugin ();
 use Foswiki::Plugins::JQueryPlugin::Plugins ();
 our @ISA = qw( Foswiki::Plugins::JQueryPlugin::Plugin );
 use Foswiki::Form ();
+use Error qw(:try);
+use Foswiki::AccessControlException ();
 
 use constant DEBUG => 0; # toggle me
 sub writeDebug {
@@ -50,7 +52,7 @@ sub new {
   my $this = bless($class->SUPER::new( 
     $session,
     name => 'Grid',
-    version => '3.6.3',
+    version => '3.7.2',
     author => 'Tony Tomov',
     homepage => 'http://www.trirand.com/blog/',
     puburl => '%PUBURLPATH%/%SYSTEMWEB%/JQGridPlugin',
@@ -62,6 +64,7 @@ sub new {
   $this->{fieldNameMap} = {
     'topic' => 'Topic', 
     'Topic' => 'topic',
+    'TopicTitle' => 'topictitle',
     'info.date' => 'Modified', 
     'Modified' => 'info.date',
     'info.date' => 'Changed', 
@@ -113,7 +116,7 @@ sub handleGrid {
   my $theWeb = $params->{web} || $web;
   my $theForm = $params->{form} || '';
   my $theCols = $params->{columns};
-  my $theRows = $params->{rows} || 20;
+  my $theRows = $params->{rows};
   my $theRowNumbers = $params->{rownumbers} || 'off';
   my $theInclude = $params->{include};
   my $theExclude = $params->{exclude};
@@ -124,13 +127,12 @@ sub handleGrid {
   my $theCaption = $params->{caption};
   my $thePager = $params->{pager} || 'off';
   my $theViewRecords = $params->{viewrecords} || 'on';
-  my $theHeight = $params->{height};
+  my $theHeight = $params->{height} || 'auto';
   my $theWidth = $params->{width};
   my $theScroll = $params->{scroll} || 'off';
   my $theRowList = $params->{rowlist} || '5, 10, 20, 30, 40, 50, 100';
-
-  # SMELL: unused for now
-  #my $theEditable = $params->{editable} || 'off';
+  my $theEdit = $params->{edit} || 'off';
+  my $theMulti = $params->{multiselect} || 'off';
 
   # sanitize params
   $theRowNumbers = ($theRowNumbers eq 'on')?'true':'false';
@@ -180,28 +182,26 @@ HERE
 #    "foswiki_filtertoolbar:".($theFilterbar eq 'on'?'true':'false'),
 #    "foswiki_navgrid:".($theToolbar eq 'on'?'true':'false'),
   my @metadata = (
-    "rowNum:$theRows",
     "rowList:[$theRowList]",
     "sortorder: '$sortOrder'",
     "rownumbers: $theRowNumbers",
     "cellLayout: 18", # SMELL: this is depending on the skin's css :(
   );
-  
+ 
+  push @metadata, "multiselect:true" if $theMulti eq 'on';
+  push @metadata, "rowNum:$theRows" if defined $theRows;
   push @metadata, "pager:'$pagerId'" if $thePager eq 'on';
   push @metadata, "sortname: '$theSort'" if $theSort;
-  push @metadata, "height: '$theHeight'" if defined $theHeight;
+  push @metadata, "height: '$theHeight'" if $theHeight;
   push @metadata, 'scroll: true' if $theScroll eq 'on';
   push @metadata, 'viewrecords: true' if $theViewRecords eq 'on';
 
-  if ($theWidth) {
-    if ($theWidth eq 'auto') {
+  if (defined $theWidth) {
+    if ($theWidth && $theWidth eq 'auto') {
       push @metadata, "autowidth: true";
     } else {
       push @metadata, "width: '$theWidth'";
     }
-  }
-  if ($theWidth || $theHeight) {
-    push @metadata, 'forceFit: true';
   }
 
   push @metadata, "caption:'$theCaption'" if defined $theCaption; 
@@ -209,7 +209,7 @@ HERE
   if ($theQuery || $theForm) {
     # ajax mode #############################
     if (!$theQuery && $theForm) {
-      $theQuery = "name='$theForm'";
+      $theQuery = "form.name='$theForm'";
     }
 
     my $theFormWeb = $theWeb;
@@ -262,10 +262,30 @@ HERE
       # search
       my $fieldSearch = $params->{$fieldName.'_search'};
       $fieldSearch = 'on' unless defined $fieldSearch;
-      #$fieldSearch = 'false' if $this->column2FieldName($fieldName) eq 'info.date';
-      $fieldSearch = 'false' if $this->column2FieldName($fieldName) =~ /Image|Photo|Icon/;
       $fieldSearch = ($fieldSearch eq 'on')?'true':'false';
       push @colModel, "search:$fieldSearch";
+
+      # formatter, but also for table2grid mode
+      # TODO
+      if ($fieldName =~ /^(Date|Changed|Modified|info.date|info.createdate)$/) {
+        push @colModel, "formatter:'date'";
+        push @colModel, "formatoptions: {srcformat: 's', newformat: 'd M Y - H:i'}";
+        push @colModel, "sorttype:'date'";
+      }
+      if ($fieldName =~ /^(.*Topic|TopicTitle)$/) {
+        push @colModel, "formatter:'topic'";
+      }
+
+
+      # edit
+      if ($theEdit eq 'on') {
+        if ($fieldName =~ /^(Changed|Modified|Author|info.date|info.author|Topic|topic)$/) {
+          push @colModel, "editable:false";
+        } else {
+          push @colModel, "editable:true";
+          push @colModel, "edittype:'text'";
+        }
+      }
 
       # colmodel
       push @colModels, '{ '.join(', ', @colModel).'}';
@@ -288,13 +308,64 @@ HERE
     push @metadata, "datatype: 'xml'";
     push @metadata, "mtype: 'GET'";
 
+    if ($theEdit eq 'on') {
+      push @metadata, "editurl:'$gridConnectorUrl'"; 
+      my $onSelect = <<"HERE";
+ondblClickRow: function(id) { 
+  var grid = \$(this);
+  var lastSel = grid.data('lastSel');
+  if(id && id !== lastSel) { 
+    grid.jqGrid('restoreRow', lastSel); 
+    grid.jqGrid('editRow', id, true, 
+      true, //oneditfunc
+      function(id) { // successfunc
+        \$.log("GRID: success");
+        grid.trigger("reloadGrid");
+        grid.removeData("lastSel");
+        return true;
+      }, 
+      false, // url
+      '', // extra param
+      function(id) {
+        \$.log("GRID: after save");
+        grid.removeData("lastSel");
+      },
+      function (id) {
+        \$.log("GRID: error");
+        grid.removeData("lastSel");
+      },
+      function (id) {
+        \$.log("GRID: after restore");
+        grid.removeData("lastSel");
+      }
+    ); 
+    grid.data("lastSel", id);
+  } 
+}
+HERE
+      push @metadata, $onSelect;
+    }
+
     my $metadata = '{'.join(",\n", @metadata)."}\n";
+    my $autoResizer = '';
+    if (defined $theWidth && $theWidth eq 'auto') {
+      $autoResizer = <<"HERE";
+  jQuery(window).bind("resize", function() {
+    var parent = myGrid.parents('.ui-jqgrid:first').parent();
+    var gridWidth = parent.width()-2;
+    myGrid.setGridWidth(gridWidth);
+  });
+HERE
+    }
+
+
     my $jsTemplate = <<"HERE";
 <script>
 jQuery(function(\$) {
   var myGrid = \$('#$gridId').jqGrid($metadata);
   $filterToolbar;
   $navGrid;
+  $autoResizer;
 }); 
 </script>
 HERE
@@ -306,8 +377,10 @@ HERE
     return $result;
   } else {
     # table conversion mode #############################
+    push @metadata, "gridId:'$gridId'";
+    push @metadata, "filterToolbar: true" if $theFilterbar eq 'on';
     my $metadata = '{'.join(', ', @metadata).'}';
-    return "<div class='jqTable2Grid $metadata'></div>";
+    return '<div class="jqTable2Grid '.$metadata.'"></div>';
   }
 }
 
@@ -315,25 +388,132 @@ HERE
 
 ---++ ClassMethod restGridConnector( $this ) -> $xml
 
-rest handler for the grid widget
+rest handler for the grid widget. based on the "oper" url parameter
+processing the actual request is delegated further to either
+=restGridConnectorSave= or =restGridConnectorSearch=
 
 =cut
 
 sub restGridConnector {
-   my ($this, $subject, $verb, $response ) = @_;
+  my ($this, $subject, $verb, $response) = @_;
 
   my $request = Foswiki::Func::getCgiQuery();
+  my $action = $request->param('oper') || 'search';
+
+  if ($action eq 'edit') {
+    return $this->restGridConnectorSave($request, $response);
+  } else {
+    return $this->restGridConnectorSearch($request, $response);
+  }
+}
+
+=begin TML
+
+---++ ClassMethod restGridConnectorSearch( $this, $request, $response ) -> $xml
+
+rest handler for the grid widget, action =search=
+
+=cut
+
+sub restGridConnectorSave {
+  my ($this, $request, $response) = @_;
+
+  #print STDERR "called restGridConnectorSave()\n";
+  my @params = $request->param();
+  my $web;
+  my $topic;
+  foreach my $key (@params) {
+    next if $key eq 'oper';
+    my $val = $request->param($key);
+    #print STDERR "param: $key=$val\n";
+    if ($key eq 'id') {
+      ($web, $topic) = Foswiki::Func::normalizeWebTopicName(undef, $val);
+    }
+  }
+
+  #print STDERR "web=$web, topic=$topic\n";
+  my $wikiName = Foswiki::Func::getWikiName();
+  #print STDERR "wikiName=$wikiName\n";
+
+  my ($meta, $text) = Foswiki::Func::readTopic($web, $topic);
+  unless (Foswiki::Func::checkAccessPermission("VIEW", $wikiName, $text, $topic, $web, $meta)) {
+    returnRESTResult($response, 401, "ERROR: Unauthorized access to $web.$topic");
+    return '';
+  }
+  unless (Foswiki::Func::checkAccessPermission("CHANGE", $wikiName, $text, $topic, $web, $meta)) {
+    returnRESTResult($response, 401, "ERROR: Unauthorized access to $web.$topic");
+    return '';
+  }
+
+  #print STDERR "got change access to $web.$topic\n";
+
+  # store formfields
+  foreach my $key (@params) {
+    next if $key =~ /^(id|oper)$/;
+    my $val = $request->param($key);
+    $val =~ s/^\s+//;
+    $val =~ s/\s+$//;
+    my $field = $meta->get('FIELD', $key);
+    if ($field) {
+      $field->{value} = $val;
+      $meta->putKeyed('FIELD', $field);
+    } else {
+      if ($key eq 'TopicTitle') {
+        # store topic title in prefs
+        $meta->putKeyed('PREFERENCE', {
+          name=>'TOPICTITLE',
+          title=>'TOPICTITLE',
+          type=>'Local',
+          value=>$val,
+        });
+      } else {
+        $meta->putKeyed('FIELD', {
+          name=>$key,
+          title=>$key,
+          value=>$val,
+        });
+      }
+    }
+  }
+
+  try {
+    Foswiki::Func::saveTopic($web, $topic, $meta, $text);
+  }
+  catch Foswiki::AccessControlException with {
+    my $e = shift;
+    returnRESTResult($response, 401, "ERROR: Unauthorized access to $web.$topic");
+  }
+  catch Error::Simple with {
+    my $e = shift;
+    returnRESTResult($response, 500, "ERROR: error while saving $web.$topic");
+  };
+
+  return '';
+}
+
+=begin TML
+
+---++ ClassMethod restGridConnectorSearch( $this, $request, $response ) -> $xml
+
+rest handler for the grid widget, action =search=
+
+=cut
+
+sub restGridConnectorSearch {
+  my ($this, $request, $response) = @_;
+
   my $query = $request->param('query') || '1';
   $query = urlDecode($query);
 
   my $columns = urlDecode($request->param('columns') || '');
-  foreach my $fieldName (split(/\s*,\s*/, $columns)) {
-    my $values = $request->param($fieldName);
+  foreach my $columnName (split(/\s*,\s*/, $columns)) {
+    my $values = $request->param($columnName);
     next unless $values;
 
-    $fieldName = $this->column2FieldName($fieldName);
+    my $fieldName = $this->column2FieldName($columnName);
 
-    foreach my $value (split(/\s*,\s*/, $values)) {
+    # add search filters
+    foreach my $value (split(/\s+/, $values)) {
       if ($value =~ /^-(.*)$/) {
         $query .= " AND !(lc($fieldName)=~lc('$1'))";
       } else {
@@ -471,34 +651,14 @@ sub search {
     $tml .= '  <page>'.$params{page}.'</page>$n';
     $tml .= '  <total>'.$params{totalPages}.'</total>$n';
     $tml .= '  <records>'.$params{count}.'</records>$n" ';
-    $tml .= 'format="<row id=\'$index\'>$n';
+    $tml .= 'format="<row id=\'$web.$topic\'>$n';
 
     my @selectedFields = split(/\s*,\s*/, $params{columns});
     foreach my $fieldName (@selectedFields) {
       my $cell = '';
       $fieldName = $this->column2FieldName($fieldName);
-      if ($fieldName eq 'Icon') {
-        $cell .= '<img src=\'$expand('.$fieldName.')\' width=\'16\' />';
-      } elsif ($fieldName =~ /Image|Photo/) {
-        if ($context->{ImagePluginEnabled}) {
-          $cell .= '$percntIMAGE{\"$expand('.$fieldName.')\" size=\"80\" type=\"plain\" warn=\"off\"}$percnt';
-        } else {
-          $cell .= '<img src=\'$expand('.$fieldName.')\' style=\'max-width:80px\' />';
-        }
-      } elsif ($fieldName =~ /info.author/) {
-        $cell .= '[[%USERSWEB%.$expand(info.author)][$expand(info.author)]]';
-      } elsif ($fieldName =~ /info.date|createdate/) {
-        $cell .= '$formatTime('.$fieldName.')';
-      } elsif ($fieldName eq 'topic') {
-        $cell .= '[[$web.$topic][$expand(topictitle or topic)]]';
-      } else {
-        if ($context->{FlexFormPluginEnabled}) {
-          $cell .= '$percntRENDERFORDISPLAY{topic=\"$web.$topic\" field=\"'.$fieldName.'\" format=\"$value\"}$percnt';
-        } else {
-          $cell .= '$expand('.$fieldName.')';
-        }
-      }
-      $tml .= '<cell><![CDATA['.$cell.' ]]></cell>'."\n"; # SMELL extra space behind cell needed to work around bug in Render::getRenderedVerision
+      $cell .= '$expand('.$fieldName.')';
+      $tml .= '<cell><![CDATA['.$cell.']]></cell>'."\n"; # SMELL extra space behind cell needed to work around bug in Render::getRenderedVerision
     }
     $tml .= '</row>"}%';
 
