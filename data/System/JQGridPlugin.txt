@@ -92,7 +92,8 @@ subject to further changes.
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
-|  26 May 2010: | fixed loading locales; \
+|  19 Nov 2010: | 0.2.1: Foswikitask:Item9564 - add dependency to help script load ordering |
+|  26 May 2010: | 0.2: fixed loading locales; \
                   improved grid construction process; \
                   added field-specific options (title, resizable, align, width, search); \
                   ongoing work on colmodel |

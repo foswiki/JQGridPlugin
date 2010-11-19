@@ -95,7 +95,7 @@ sub init {
     unless -f $this->{puburl}.'/'.$localeFile;
 
   my $header .= $this->renderJS($localeFile);
-  Foswiki::Func::addToZone('script', "JQUERYPLUGIN::GRID::LANG", $header);
+  Foswiki::Func::addToZone('script', "JQUERYPLUGIN::GRID::LANG", $header, 'JQUERYPLUGIN');
 }
 
 =begin TML
