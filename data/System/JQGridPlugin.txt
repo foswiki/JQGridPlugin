@@ -49,7 +49,7 @@ render a grid of topics matching the given query
 
 ---++ Special columns
 
-Normnally, the data and the way it is displayed in a GRID is specified by the !DataForm definition the GRID expression points to.
+Normally, the data and the way it is displayed in a GRID is specified by the !DataForm definition the GRID expression points to.
 However, there's a set of additional properties of a topic that can be displayed in a GRID. These are specified in the =columns=
 parameter to %GRID and are mapped to the actual property as follows: 
 
