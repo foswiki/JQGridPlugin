@@ -1,16 +1,19 @@
 jQuery(function($) {
   $.fn.fmatter.image = function(cellVal, opts, rowData) {
     if(!isEmpty(cellVal)) {
-      var op = {
-        width: 80,
-        baseUrl: '',
-        params: '',
-        urlFormat: '%url%/%value%?%params%'
-      };
+      var url,
+          op = {
+            width: 80,
+            baseUrl: '',
+            params: '',
+            urlFormat: '%url%%value%?%params%'
+          };
+
       if(!isUndefined(opts.colModel.formatoptions)) {
         op = $.extend({}, op, opts.colModel.formatoptions);
       }
-      var url = urlFormat.
+
+      url = op.urlFormat.
         replace(/%url%/g, op.baseUrl).
         replace(/%value%/g, cellVal).
         replace(/%params%/g, op.params);

@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" date="1271426279" format="1.1" version="1.3"}%
+%META:TOPICINFO{author="ProjectContributor" comment="save topic" date="1290553816" format="1.1" reprev="3" version="3"}%
 ---+ %TOPIC%
 
 %STARTSECTION{"summary"}%
@@ -37,7 +37,7 @@ render a grid of topics matching the given query
 | =caption= | caption to be displayed at the top of the grid | |
 | =pager= | toggle on/off the pager in the toolbar | off |
 | =viewrecords= | toggle on/off computing the total number of records and pages as part of the pager | on |
-| =height= | height of the grid; can be set as a number or =auto= | | 
+| =height= | height of the grid; can be set as a number or =auto= | |
 | =width= | width of the grid; if not set, the grid's width is the sum of the width of all column  | |
 | =scroll= | when enabled the pager element is disabled; data is loaded dynamically while scrolling down the grid | off |
 | =rowlist= | comma separated list of optional number of rows to select from in the grid interface | 5, 10, 20, 30, 40, 50, 100 |
@@ -46,19 +46,25 @@ render a grid of topics matching the given query
 | =colname_align= | (per column option) alignment of the data in the cell | left |
 | =colname_width= | (per column option) width of this column in pixel | |
 | =colname_search= | (per column option) toggle on/off if this column is searchable or not | on |
-
+| =id= | id of the grid | Any relevant name |
+| =querytopic= | search query | A topic that jQGrid should use as the target of its ajax requests, instead of JQGridPlugin's rest handler. The topic should render an XML response appropriate for the URL parameters that jqGrid gives it (page, sort, columns, etc) |
+| =sortable= | (per column option) sort column in ascending or descending order | on |
+| =loadonce= | grid loads data from the server once, all other manipulations are done on the client side | on |
+| =multiselect= | allows selection of multiple rows in the grid | on |
+| =onSelectRow= | event handler triggered when a row is selected | |
+| =onSelectAll= | event handler triggered when all rows selected at once | |
+| =gridComplete= | event handler triggered when the grid is loaded | |
 ---++ Special columns
 
 Normally, the data and the way it is displayed in a GRID is specified by the !DataForm definition the GRID expression points to.
 However, there's a set of additional properties of a topic that can be displayed in a GRID. These are specified in the =columns=
-parameter to %GRID and are mapped to the actual property as follows: 
+parameter to %GRID and are mapped to the actual property as follows:
 
 | *Colname* | *Data* | *Displayed* |
 | Topic | topic name | link to topic |
 | Modified, Changed | time when the topic has been changed recently | standard date format |
 | By, Author | author of the last modification | link to author's homepage |
-| Image, Photo | formfields of that name | displayed as html &lt;img> tag where the data is used as src link ||
-
+| Image, Photo | formfields of that name | displayed as html &lt;img&gt; tag where the data is used as src link ||
 When [[Foswiki:Extensions/FlexFormPlugin][FlexFormPlugin]] is installed, each cell is rendered using
 =%RENDERFORDISPLAY= expression.
 
@@ -66,9 +72,9 @@ When [[Foswiki:Extesions/ImagePlugin][ImagePlugin]] is installed, each Image/Pho
 =%IMAGE= expression to render thumbnails.
 
 %RED%
-WARNING: This part is still in flux and solved rather adhoc for now. 
+WARNING: This part is still in flux and solved rather adhoc for now.
 The way how to specify which data is displayed in which way per column is still
-subject to further changes. 
+subject to further changes.
 %ENDCOLOR%
 
 ---++ Examples
@@ -78,11 +84,13 @@ subject to further changes.
   columns="Topic,FirstName,LastName,Organization,Country,Telephone"
   filterbar="on"
   rownumbers="on"
+  Topic_title="Link to topic"
   width="auto"
   height="auto"
 }%
 
 ---++ Installation Instructions
+
 %$INSTALL_INSTRUCTIONS%
 
 ---++ Plugin Info
@@ -91,13 +99,14 @@ subject to further changes.
 |  License: | GPL |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
-|  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  Change History: | <!-- versions below in reverse order --> |
+|  06 Jan 2011: | 0.3.1: Foswikitask:Item10228 - add parameters to grid to make it customizable |
 |  08 Sep 2010: | 0.3: upgraded to jqgrid-3.7.2; fixed vertical scrolling; fixed resizing of columns |
 |  19 Nov 2010: | 0.2.1: Foswikitask:Item9564 - add dependency to help script load ordering |
 |  26 May 2010: | 0.2: fixed loading locales; \
-                  improved grid construction process; \
-                  added field-specific options (title, resizable, align, width, search); \
-                  ongoing work on colmodel |
+improved grid construction process; \
+added field-specific options (title, resizable, align, width, search); \
+ongoing work on colmodel |
 |  26 Mar 2010: | initial release, externalized from Foswiki:Extensions/JQueryPlugin |
 |  Dependencies: | %$DEPENDENCIES% |
 |  Home: | Foswiki:Extensions/%TOPIC% |
