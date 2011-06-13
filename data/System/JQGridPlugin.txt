@@ -14,7 +14,7 @@ See also the [[http://www.trirand.com/jqgridwiki/doku.php?id=wiki:jqgriddocs][jq
 
 Homepage: http://www.trirand.com/blog/ %BR%
 Author(s): Tony Tomov %BR%
-Version: 3.6.5
+Version: 4.0.0
 
 ---++ Syntax
 =%<nop>GRID{"&lt;query>" form="..." }%=
