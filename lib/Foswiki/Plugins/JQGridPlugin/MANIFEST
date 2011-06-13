@@ -1,6 +1,10 @@
 data/System/JQGridPlugin.txt 0644
+lib/Foswiki/Plugins/JQGridPlugin/Connector.pm 0644
+lib/Foswiki/Plugins/JQGridPlugin/DBCacheConnector.pm 0644
+lib/Foswiki/Plugins/JQGridPlugin/FoswikiConnector.pm 0644
 lib/Foswiki/Plugins/JQGridPlugin/GRID.pm 0644
 lib/Foswiki/Plugins/JQGridPlugin.pm 0644
+lib/Foswiki/Plugins/JQGridPlugin/SearchConnector.pm 0644
 pub/System/JQGridPlugin/css/ellipsis-xbl.xml 0644
 pub/System/JQGridPlugin/css/jquery.jqgrid.css 0644
 pub/System/JQGridPlugin/css/jquery.jqgrid.css.gz 0644
@@ -13,7 +17,9 @@ pub/System/JQGridPlugin/grid.base.js 0644
 pub/System/JQGridPlugin/grid.celledit.js 0644
 pub/System/JQGridPlugin/grid.common.js 0644
 pub/System/JQGridPlugin/grid.custom.js 0644
+pub/System/JQGridPlugin/grid.filter.js 0644
 pub/System/JQGridPlugin/grid.formedit.js 0644
+pub/System/JQGridPlugin/grid.grouping.js 0644
 pub/System/JQGridPlugin/grid.import.js 0644
 pub/System/JQGridPlugin/grid.inlinedit.js 0644
 pub/System/JQGridPlugin/grid.jqueryui.js 0644
@@ -23,6 +29,9 @@ pub/System/JQGridPlugin/grid.setcolumns.js 0644
 pub/System/JQGridPlugin/grid.subgrid.js 0644
 pub/System/JQGridPlugin/grid.tbltogrid.js 0644
 pub/System/JQGridPlugin/grid.treegrid.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-ar.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-ar.js.gz 0644
+pub/System/JQGridPlugin/i18n/grid.locale-ar.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-bg1251.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-bg1251.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-bg1251.uncompressed.js 0644
@@ -38,6 +47,9 @@ pub/System/JQGridPlugin/i18n/grid.locale-cn.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-cs.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-cs.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-cs.uncompressed.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-da.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-da.js.gz 0644
+pub/System/JQGridPlugin/i18n/grid.locale-da.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-de.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-de.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-de.uncompressed.js 0644
@@ -61,6 +73,9 @@ pub/System/JQGridPlugin/i18n/grid.locale-fi.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-fr.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-fr.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-fr.uncompressed.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-gl.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-gl.js.gz 0644
+pub/System/JQGridPlugin/i18n/grid.locale-gl.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-he.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-he.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-he.uncompressed.js 0644
@@ -78,6 +93,9 @@ pub/System/JQGridPlugin/i18n/grid.locale-ja.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-jp.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-jp.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-jp.uncompressed.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-lt.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-lt.js.gz 0644
+pub/System/JQGridPlugin/i18n/grid.locale-lt.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-nl.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-nl.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-nl.uncompressed.js 0644
@@ -104,6 +122,9 @@ pub/System/JQGridPlugin/i18n/grid.locale-sk.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sp.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sp.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sp.uncompressed.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-sr.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-sr.js.gz 0644
+pub/System/JQGridPlugin/i18n/grid.locale-sr.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sv.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sv.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sv.uncompressed.js 0644

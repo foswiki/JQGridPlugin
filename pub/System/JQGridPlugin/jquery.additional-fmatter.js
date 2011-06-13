@@ -1,6 +1,6 @@
 jQuery(function($) {
   $.fn.fmatter.image = function(cellVal, opts, rowData) {
-    if(!isEmpty(cellVal)) {
+    if(!$.fmatter.isEmpty(cellVal)) {
       var url,
           op = {
             width: 80,
@@ -9,7 +9,7 @@ jQuery(function($) {
             urlFormat: '%url%%value%?%params%'
           };
 
-      if(!isUndefined(opts.colModel.formatoptions)) {
+      if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
         op = $.extend({}, op, opts.colModel.formatoptions);
       }
 
@@ -34,7 +34,7 @@ jQuery(function($) {
     topic = opts.rowId.replace(/\./, '/'),
     viewUrl = foswiki.getPreference("SCRIPTURLPATH")+'/view';
 
-    if(!isUndefined(opts.colModel.formatoptions)) {
+    if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
       op = $.extend({},op,opts.colModel.formatoptions);
     }
     if(op.target) {
@@ -46,7 +46,7 @@ jQuery(function($) {
       url += '?'+ op.addParam;
     }
 
-    if(isString(cellVal)) { //add this one even if its blank string
+    if($.fmatter.isString(cellVal)) { //add this one even if its blank string
       return "<a "+target+" href='" + url + "'>" + cellVal + "</a>";
     } else {
       return $.fn.fmatter.defaultFormat(cellVal,opts);

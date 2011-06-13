@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 # 
-# Copyright (C) 2009-2010 Michael Daum, http://michaeldaumconsulting.com
+# Copyright (C) 2009-2011 Michael Daum, http://michaeldaumconsulting.com
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,15 +19,9 @@ use warnings;
 
 use Foswiki::Plugins::JQueryPlugin::Plugin ();
 use Foswiki::Plugins::JQueryPlugin::Plugins ();
-our @ISA = qw( Foswiki::Plugins::JQueryPlugin::Plugin );
 use Foswiki::Form ();
-use Error qw(:try);
-use Foswiki::AccessControlException ();
 
-use constant DEBUG => 0; # toggle me
-sub writeDebug {
-  print STDERR "- GRID - $_[0]\n" if DEBUG;
-}
+our @ISA = qw( Foswiki::Plugins::JQueryPlugin::Plugin );
 
 =begin TML
 
@@ -60,20 +54,6 @@ sub new {
     css => ['css/jquery.jqgrid.css'],
     dependencies => ['ui', 'metadata', 'livequery', 'JQUERYPLUGIN::THEME', 'JQUERYPLUGIN::GRID::LANG'], 
   ), $class);
-
-  $this->{fieldNameMap} = {
-    'topic' => 'Topic', 
-    'Topic' => 'topic',
-    'TopicTitle' => 'topictitle',
-    'info.date' => 'Modified', 
-    'Modified' => 'info.date',
-    'info.date' => 'Changed', 
-    'Changed' => 'info.date',
-    'info.author' => 'By', 
-    'By' => 'info.author',
-    'info.author' => 'Author', 
-    'Author' => 'info.author'
-  };
 
   return $this;
 }
@@ -138,7 +118,7 @@ sub handleGrid {
   my $theGridComplete = $params->{gridComplete};
   my $theOnSelectRow = $params->{onSelectRow};
   my $theOnSelectAll = $params->{onSelectAll};
-  
+  my $theConnector = $params->{connector} || $Foswiki::cfg{JQGridPlugin}{DefaultConnector};
 
   # sanitize params
   $theRowNumbers = ($theRowNumbers eq 'on')?'true':'false';
@@ -251,6 +231,9 @@ HERE
       my @colModel;
       push @colModel, "name:'$fieldName'";
 
+      # switch off tooltips as they are wrong most of the time using renderForDisplay to display cells
+      push @colModel, "title:false";
+
       # title
       my $fieldTitle = $params->{$fieldName.'_title'};
       $fieldTitle = $fieldName unless defined $fieldTitle;
@@ -312,21 +295,35 @@ HERE
     my $baseWeb = $this->{session}->{webName};
     my $baseTopic = $this->{session}->{topicName};
     my $gridConnectorUrl;
-    if ( $params->{querytopic} ) {
-     my ($queryWeb, $queryTopic) = Foswiki::Func::normalizeWebTopicName($baseWeb, $params->{querytopic});
-     $gridConnectorUrl = Foswiki::Func::getScriptUrl($queryWeb, $queryTopic, 'view', 
-       web => $queryWeb, topic => $queryWeb . '.' . $queryTopic, 
-       skin => 'text', contenttype => 'text/xml', section => 'grid',
-       query => $theQuery, columns=>join(',', @selectedFields));
-     } else {
-      $gridConnectorUrl = Foswiki::Func::getScriptUrl('JQGridPlugin', 'gridconnector', 'rest',
-        topic=>$baseWeb.'.'.$baseTopic,
-        web=>$theWeb,
-        query=>$theQuery,
-        columns=>join(',', @selectedFields),
+
+    my ($connectorWeb, $connectorTopic) = Foswiki::Func::normalizeWebTopicName($baseWeb, $theConnector);
+    if (Foswiki::Func::topicExists($connectorWeb, $connectorTopic)) {
+      $gridConnectorUrl = Foswiki::Func::getScriptUrl(
+        $connectorWeb, $connectorTopic, 'view',
+        web => $theWeb,
+        skin => 'text',
+        contenttype => 'text/xml',
+        section => 'grid',
+        query => $theQuery,
+        columns => join(',', @selectedFields)
       );
+    } else {
+
+      if (defined $Foswiki::cfg{JQGridPlugin}{Connector}{$theConnector}) {
+        $gridConnectorUrl = Foswiki::Func::getScriptUrl(
+          'JQGridPlugin', 'gridconnector', 'rest',
+          topic => $baseWeb . '.' . $baseTopic,
+          web => $theWeb,
+          query => $theQuery,
+          columns => join(',', @selectedFields),
+          connector => $theConnector,
+        );
+      } else {
+        die "unknown grid connector $theConnector"; # SMELL: where's the catch
+      }
     }
     $gridConnectorUrl =~ s/'/\\'/g;
+
     push @metadata, "url:'$gridConnectorUrl'";
     push @metadata, "datatype: 'xml'";
     push @metadata, "mtype: 'GET'";
@@ -410,441 +407,6 @@ HERE
     push @metadata, "filterToolbar: true" if $theFilterbar eq 'on';
     my $metadata = '{'.join(', ', @metadata).'}';
     return '<div class="jqTable2Grid '.$metadata.'"></div>';
-  }
-}
-
-=begin TML
-
----++ ClassMethod restGridConnector( $this ) -> $xml
-
-rest handler for the grid widget. based on the "oper" url parameter
-processing the actual request is delegated further to either
-=restGridConnectorSave= or =restGridConnectorSearch=
-
-=cut
-
-sub restGridConnector {
-  my ($this, $subject, $verb, $response) = @_;
-
-  my $request = Foswiki::Func::getCgiQuery();
-  my $action = $request->param('oper') || 'search';
-
-  if ($action eq 'edit') {
-    return $this->restGridConnectorSave($request, $response);
-  } else {
-    return $this->restGridConnectorSearch($request, $response);
-  }
-}
-
-=begin TML
-
----++ ClassMethod restGridConnectorSearch( $this, $request, $response ) -> $xml
-
-rest handler for the grid widget, action =search=
-
-=cut
-
-sub restGridConnectorSave {
-  my ($this, $request, $response) = @_;
-
-  #print STDERR "called restGridConnectorSave()\n";
-  my @params = $request->param();
-  my $web;
-  my $topic;
-  foreach my $key (@params) {
-    next if $key eq 'oper';
-    my $val = $request->param($key);
-    #print STDERR "param: $key=$val\n";
-    if ($key eq 'id') {
-      ($web, $topic) = Foswiki::Func::normalizeWebTopicName(undef, $val);
-    }
-  }
-
-  #print STDERR "web=$web, topic=$topic\n";
-  my $wikiName = Foswiki::Func::getWikiName();
-  #print STDERR "wikiName=$wikiName\n";
-
-  my ($meta, $text) = Foswiki::Func::readTopic($web, $topic);
-  unless (Foswiki::Func::checkAccessPermission("VIEW", $wikiName, $text, $topic, $web, $meta)) {
-    returnRESTResult($response, 401, "ERROR: Unauthorized access to $web.$topic");
-    return '';
-  }
-  unless (Foswiki::Func::checkAccessPermission("CHANGE", $wikiName, $text, $topic, $web, $meta)) {
-    returnRESTResult($response, 401, "ERROR: Unauthorized access to $web.$topic");
-    return '';
-  }
-
-  #print STDERR "got change access to $web.$topic\n";
-
-  # store formfields
-  foreach my $key (@params) {
-    next if $key =~ /^(id|oper)$/;
-    my $val = $request->param($key);
-    $val = fromUtf8($val);
-    $val =~ s/^\s+//;
-    $val =~ s/\s+$//;
-    my $field = $meta->get('FIELD', $key);
-    if ($field) {
-      $field->{value} = $val;
-      $meta->putKeyed('FIELD', $field);
-    } else {
-      if ($key eq 'TopicTitle') {
-        # store topic title in prefs
-        $meta->putKeyed('PREFERENCE', {
-          name=>'TOPICTITLE',
-          title=>'TOPICTITLE',
-          type=>'Local',
-          value=>$val,
-        });
-      } else {
-        $meta->putKeyed('FIELD', {
-          name=>$key,
-          title=>$key,
-          value=>$val,
-        });
-      }
-    }
-  }
-
-  try {
-    Foswiki::Func::saveTopic($web, $topic, $meta, $text);
-  }
-  catch Foswiki::AccessControlException with {
-    my $e = shift;
-    returnRESTResult($response, 401, "ERROR: Unauthorized access to $web.$topic");
-  }
-  catch Error::Simple with {
-    my $e = shift;
-    returnRESTResult($response, 500, "ERROR: error while saving $web.$topic");
-  };
-
-  return '';
-}
-
-=begin TML
-
----++ ClassMethod restGridConnectorSearch( $this, $request, $response ) -> $xml
-
-rest handler for the grid widget, action =search=
-
-=cut
-
-sub restGridConnectorSearch {
-  my ($this, $request, $response) = @_;
-
-  my $query = $request->param('query') || '1';
-  $query = urlDecode($query);
-
-  my $columns = urlDecode($request->param('columns') || '');
-  foreach my $columnName (split(/\s*,\s*/, $columns)) {
-    my $values = $request->param($columnName);
-    next unless $values;
-
-    my $fieldName = $this->column2FieldName($columnName);
-    my @filterquery;
-
-    # add search filters
-    foreach my $value (split(/\s+/, $values)) {
-      if ($value =~ /^-(.*)$/) {
-        push(@filterquery, "! (lc($fieldName)=~lc('$1'))");
-      } else {
-        push(@filterquery, "lc($fieldName)=~lc('$value')");
-      }
-    }
-    if (scalar(@filterquery)) {
-      $query = join(' AND ', @filterquery) . " AND ($query)";
-    }
-  }
-
-  my $sort = $request->param('sidx') || '';
-  my $sord = $request->param('sord') || 'asc';
-
-  my $reverse = ($sord eq 'desc'?'on':'off');
-
-  my $web = $request->param('web') || $this->{session}->{webName};
-  my $topic = $this->{session}->{topicName};
-
-  my $count = $this->count($web, $query);
-  unless (defined $count) {
-    returnRESTResult($response, 500, "ERROR: can't count topis in web $web using $query");
-    return '';
-  }
-
-  my $rows = $request->param('rows') || 10;
-  my $totalPages = int($count / $rows + 1);
-
-  my $page = $request->param('page') || 1;
-  $page = $totalPages if $page > $totalPages;
-  $page = 1 if $page < 1;
-
-  my $end = $rows * $page;
-  my $start = $end - $rows;
-  $start = 0 if $start < 0;
-
-  # create xml
-  my $result = $this->search(
-    web=>$web,
-    topic=>$topic,
-    query=>$query,
-    sort=>$sort, 
-    reverse=>$reverse, 
-    start=>$start, 
-    rows=>$rows,
-    columns=>$columns,
-    totalPages=>$totalPages,
-    page=>$page,
-    count=>$count,
-  );
-  if (defined $result) {
-    $this->{session}->writeCompletePage($result, 'view', 'text/xml');
-  } else {
-    returnRESTResult($response, 500, "ERROR: can't search in web $web using $query");
-  }
-  return '';
-}
-
-=begin TML
-
----++ ClassMethod count( $web, $query ) -> $integer
-
-Counts the number of topics the query matches. This will use Foswiki:Extensions/DBCachePlugin
-if installed and fallback to standard means if not.
-
-=cut
-
-sub count {
-  my ($this, $web, $query) = @_;
-
-  my $count;
-  if (Foswiki::Func::getContext->{DBCachePluginEnabled}) {
-    require Foswiki::Plugins::DBCachePlugin;
-    my $db = Foswiki::Plugins::DBCachePlugin::getDB($web);
-    if(defined $db) {
-      my ($topicNames, $hits, $msg) = $db->dbQuery($query);
-      if ($topicNames) {
-        $count = scalar(@$topicNames);
-      } else {
-        writeDebug("ERROR in count($query): $msg");
-      }
-    }
-  } else {
-    # TODO
-#    $count = Foswiki::Func::expandCommonVariables(<<"HERE");
-#%SEARCH{
-#    "$query"
-#    type="query"
-#    web="$web"
-#    nonoise="on"
-#    format=""
-#    footer="\$ntopics"
-#    zeroresults="0"
-#}%
-#HERE
-#    chomp($count);
-	$count = 1;
-  }
-
-  return $count;
-}
-
-=begin TML
-
----++ ClassMethod column2FieldName( $fieldName ) -> $realFieldName
-
-maps a column name to the real property in the TOM. returns the
-identical fieldName if no mapping is defined
-
-=cut
-
-sub column2FieldName {
-  my ($this, $fieldName) = @_;
-
-  return unless defined $fieldName;
-
-  foreach my $key (keys %{$this->{fieldNameMap}}) {
-    return $this->{fieldNameMap}{$key} 
-      if $key eq $fieldName;
-  }
-
-  return $fieldName;
-}
-
-
-=begin TML
-
----++ ClassMethod search( $web, %params ) -> $xml
-
-search $web and generate an xml result suitable for jquery.grid
-
-This will use Foswiki:Extensions/DBCachePlugin
-if installed and fallback to standard means if not.
-
-=cut
-
-sub search {
-  my ($this, %params) = @_;
-  
-  my $tml;
-  my $context = Foswiki::Func::getContext();
-
-  $params{sort} = $this->column2FieldName($params{sort});
-
-  if ($context->{DBCachePluginEnabled}) {
-    $tml = '%DBQUERY{"' . $params{query} . '" web="' . $params{web} . '" reverse="' . $params{reverse} . '" sort="' . $params{sort} . '" skip="' . $params{start} . '" limit="' . $params{rows} . '" ';
-    $tml .= 'separator="$n"';
-    $tml .= 'footer="$n</rows></noautolink>"';
-    $tml .= 'header="<?xml version=\'1.0\' encoding=\'utf-8\'?><noautolink><rows>$n';
-    $tml .= '  <page>' . $params{page} . '</page>$n';
-    $tml .= '  <total>' . $params{totalPages} . '</total>$n';
-    $tml .= '  <records>' . $params{count} . '</records>$n" ';
-    $tml .= 'format="<row id=\'$web.$topic\'>$n';
-
-    my @selectedFields = split(/\s*,\s*/, $params{columns});
-    foreach my $fieldName (@selectedFields) {
-      my $cell = '';
-      $fieldName = $this->column2FieldName($fieldName);
-      $cell .= '$expand(' . $fieldName . ')';
-      $tml .= '<cell><![CDATA[' . $cell . ']]></cell>' . "\n";    # SMELL extra space behind cell needed to work around bug in Render::getRenderedVerision
-    }
-    $tml .= '</row>"}%';
-  } else {
-    my %orderField = (
-      'Topic' => 'topic',
-      'TopicTitle' => 'formfield(TopicTitle)',
-      'info.date' => 'modified',
-      'Modified' => 'modified',
-      'Changed' => 'modified',
-      'info.author' => 'editby',
-      'By' => 'editby',
-      'Author' => 'editby'
-    );
-
-    my $order = $orderField{ $params{sort} };
-
-    if (not $order and $params{sort}) {
-      $order = "formfield($params{sort})";
-    }
-
-    # TODO
-    if (not defined $order) {
-      $order = 'topic';
-    }
-    $tml = <<"HERE";
-<noautolink>%SEARCH{
-    "$params{query}"
-    type="query"
-    nonoise="on"
-    web="$params{web}"
-    reverse="$params{reverse}"
-    pagesize="$params{rows}"
-    showpage="$params{page}"
-    order="$order"
-    separator="\$n"
-    pagerformat=" "
-	pagerformat2="<page>\$currentpage</page>
-	<total>\$numberofpages</total>
-	<records>\$percntQUERY{\$numberofpages * \$pagesize}\$percnt</records>\$n"
-    footer="\$n</rows>"
-    header="<literal><noautolink><?xml version='1.0' encoding='utf-8'?><rows>
-    <page>\$currentpage</page><total>\$numberofpages</total><records>\$percntQUERY{\$numberofpages * \$pagesize}\$percnt</records>\$n"
-    format="<row id='\$web.\$topic'>
-HERE
-    my @selectedFields = split(/\s*,\s*/, $params{columns});
-    foreach my $fieldName (@selectedFields) {
-      my $cell = '';
-      $fieldName = $this->column2FieldName($fieldName);
-      if ($fieldName eq 'topic') {
-        $cell .= '$topic';
-      } elsif ($fieldName =~ /^[a-zA-Z_]+$/) {
-        $cell .= '$formfield(' . $fieldName . ')';
-      } else {
-        $cell .= '$percntQUERY{\"\'$web.$topic\'/' . $fieldName . '\"}$percnt';
-      }
-      $tml .= '<cell><![CDATA[<nop>' . $cell . ']]></cell>' . "\n";    # SMELL extra space behind cell needed to work around bug in Render::getRenderedVerision
-    }
-    $tml .= '</row>"}%</noautolink></literal>';
-  }
-
-  $tml = Foswiki::Func::expandCommonVariables($tml, $params{topic}, $params{web});
-  $tml = Foswiki::Func::renderText($tml, $params{web}, $params{topic});
-  return $tml;
-}
-
-
-=begin TML
-
----++ StaticMethod returnRESTResult( $response, $status, $text )
-
-helper function to generate REST error messages 
-
-=cut
-
-sub returnRESTResult {
-  my ($response, $status, $text) = @_;
-
-  $response->header(
-    -status  => $status,
-    -type    => 'text/html',
-  );
-
-  $response->print("$text\n");
-  writeDebug($text) if $status >= 400;
-}
-
-=begin TML
-
----++ StaticMethod urlDecode( $text ) -> $text
-
-from Fowiki.pm
-
-=cut
-
-sub urlDecode {
-  my $text = shift;
-  $text =~ s/%([\da-f]{2})/chr(hex($1))/gei;
-  return $text;
-}
-
-=begin TML
-
----++ StaticMethod fromUtf8 ($string) -> $string
-
-converts an utf8 string to its internal representation
-
-=cut
-
-sub fromUtf8 {
-  my $string = shift;
-
-  my $charset = $Foswiki::cfg{Site}{CharSet};
-  return $string if $charset =~ /^utf-?8$/i;
-
-  if ($] < 5.008) {
-
-    # use Unicode::MapUTF8 for Perl older than 5.8
-    require Unicode::MapUTF8;
-    if (Unicode::MapUTF8::utf8_supported_charset($charset)) {
-      return Unicode::MapUTF8::from_utf8({ -string => $string, -charset => $charset });
-    } else {
-      print STDERR 'Warning: Conversion from $encoding no supported, ' . 'or name not recognised - check perldoc Unicode::MapUTF8'."\n";
-      return $string;
-    }
-  } else {
-
-    # good Perl version, just use Encode
-    require Encode;
-    import Encode;
-    my $encoding = Encode::resolve_alias($charset);
-    if (not $encoding) {
-      print STDERR 'Warning: Conversion to "' . $charset . '" not supported, or name not recognised - check ' . '"perldoc Encode::Supported"'."\n";;
-      return $string;
-    } else {
-
-      # converts to $charset, generating HTML NCR's when needed
-      my $octets = $string;
-      $octets = Encode::decode('utf-8', $string) unless utf8::is_utf8($string);
-      return Encode::encode($encoding, $octets, 0);
-    }
   }
 }
 

@@ -47,7 +47,9 @@ render a grid of topics matching the given query
 | =colname_width= | (per column option) width of this column in pixel | |
 | =colname_search= | (per column option) toggle on/off if this column is searchable or not | on |
 | =id= | id of the grid | Any relevant name |
-| =querytopic= | search query | A topic that jQGrid should use as the target of its ajax requests, instead of JQGridPlugin's rest handler. The topic should render an XML response appropriate for the URL parameters that jqGrid gives it (page, sort, columns, etc) |
+| =connector= | connector ID or a topic name | a grid connector is responsible to interact with the jQGrid widget. \
+                This can be a topic that jQGrid should use as the target of its ajax requests, or any other registered grid connector. \
+                The topic should have a =grid= section and render an appropriate XML response based on the URL parameters provided by jqGrid (page, sort, columns, etc). |
 | =sortable= | (per column option) sort column in ascending or descending order | on |
 | =loadonce= | grid loads data from the server once, all other manipulations are done on the client side | on |
 | =multiselect= | allows selection of multiple rows in the grid | on |
@@ -95,11 +97,16 @@ subject to further changes.
 
 ---++ Plugin Info
 |  Author(s): | Michael Daum |
-|  Copyright: | 2009-2010 Michael Daum http://michaeldaumconsulting.com |
+|  Copyright: | 2009-2011 Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order --> |
+|  13 Jun 2011: | 0.9.0 restructured plugin to support arbitrary Connectors; \
+                  upgraded to jqgrid-4.0.0; \
+                  implemented a Foswiki:Extensions/SolrPlugin grid connector; \
+                  fixed char encoding of REST data; \
+                  improved SEARCH based grid connector |
 |  06 Jan 2011: | 0.3.1: Foswikitask:Item10228 - add parameters to grid to make it customizable |
 |  08 Sep 2010: | 0.3: upgraded to jqgrid-3.7.2; fixed vertical scrolling; fixed resizing of columns |
 |  19 Nov 2010: | 0.2.1: Foswikitask:Item9564 - add dependency to help script load ordering |

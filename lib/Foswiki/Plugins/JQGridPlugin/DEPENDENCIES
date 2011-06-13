@@ -1,2 +1,3 @@
 Foswiki::Plugins::JQueryPlugin,>3.31,perl,Required
-
+Foswiki::Plugins::DBCachePlugin,>3.61,perl,Optional
+Foswiki::Plugins::SolrPlugin,>1.00,perl,Optional

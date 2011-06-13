@@ -17,12 +17,14 @@ JSSOURCE=\
    jqDnR.js\
    grid.subgrid.js\
    grid.treegrid.js\
+   grid.grouping.js\
    grid.import.js\
    JsonXml.js\
    grid.setcolumns.js\
    grid.postext.js\
    grid.tbltogrid.js\
-   grid.jqueryui.js
+   grid.jqueryui.js\
+   grid.filter.js
 
 -include Makefile.include
 
