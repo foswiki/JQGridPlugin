@@ -1,5 +1,5 @@
 jQuery(function($) {
-  $.fn.fmatter.image = function(cellVal, opts, rowData) {
+  $.fn.fmatter.image = function(cellVal, opts) {
     if(!$.fmatter.isEmpty(cellVal)) {
       var url,
           op = {
@@ -24,7 +24,7 @@ jQuery(function($) {
       return $.fn.fmatter.defaultFormat(cellVal, opts);
     }
   };
-  $.fn.fmatter.topic = function(cellVal, opts, rowData) {
+  $.fn.fmatter.topic = function(cellVal, opts) {
     var op = {
       addParam: opts.addParam || "", 
       target: opts.target
@@ -51,5 +51,34 @@ jQuery(function($) {
     } else {
       return $.fn.fmatter.defaultFormat(cellVal,opts);
     }
+  };
+  /* requires jquery.tmpl from http://api.jquery.com/tmpl */
+  $.fn.fmatter.tmpl = function(cellVal, opts, rowData) {
+    var data = $.extend({
+          id: opts.rowId,
+          value: cellVal
+        }, opts.colModel.formatoptions),
+        $rowData = $(rowData);
+
+    $rowData.find("cell").each(function() {
+      var $this = $(this), 
+          key = $this.attr("name"),
+          val = $this.text();
+
+      data[key] = val;
+    });
+
+    //console.log("rowData=",rowData);
+    //console.log("data=",data);
+
+    if($.fmatter.isUndefined(data.template)) {
+      return $.fn.fmatter.defaultFormat(cellVal, opts);
+    }
+
+    return $("#"+data.template).tmpl(data)
+      .appendTo("<div />").parent()[0].innerHTML;
+  };
+  $.fn.fmatter.tmpl.unformat = function(cellText, opts, cellElem) {
+    return $(cellElem).find(".cellValue:first")[0].innerHTML;
   };
 });

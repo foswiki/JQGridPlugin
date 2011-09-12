@@ -30,6 +30,7 @@ render a grid of topics matching the given query
 | =exclude= | regluar expression columns/formfields must NOT match to be included in the grid model | |
 | =rows= | number of rows to display in the grid per page | 20 |
 | =rownumbers= | toggle on/off displaying the row number in the first column of the grid | off |
+| =rownumwidth= | number of pixels to reserve for =rownumbers= | 25 |
 | =filterbar= | toggle on/off displaying a filter input field at the top of each column to narrow down search results | off |
 | =toolbar= | toggle on/off displaying a toolbar at the bottom of the grid; switch this on for pagination | off |
 | =sort= | name of column to sort the grid initially | first column (excluding the optional row numbers) |
@@ -45,11 +46,20 @@ render a grid of topics matching the given query
 | =colname_resizable= | (per column option) toggle on/off whether the width of the column can be changed by the user | on |
 | =colname_align= | (per column option) alignment of the data in the cell | left |
 | =colname_width= | (per column option) width of this column in pixel | |
-| =colname_search= | (per column option) toggle on/off if this column is searchable or not | on |
+| =colname_search= | (per column option) toggle on/off if this column is searchable or not | on (off for image columns) |
+| =colname_formatter= | (per column option) specifies one of the standard formatters of jqgrid to be used for this column | formats cell values as is |
+| =colname_formatoptions= | (per column option) additional parameters to be bassed over to the column formatter; see the docu of the formater which these are; this is a list of json objects specified as key:value pairs, comma separated.  | none |
+| =colname_format= | (per column option) specifies a template to be used when formating the a cell of this column; the format string may contain the variables: \
+  <ul> \
+     <li> =${id}=: the id of the row, most often the web.topic name </li> \
+     <li> =${value}=: the value of the current cell</li> \
+     <li> =${key}=: some custom key as specified in the =colname_formatoptions</li> \
+  </ul> Furthermore the format string may contain any formating features of %SYSTEMWEB%.JQueryTmpl | |
+| =colname_hidden= | (per column option) boolean value; if set the column will be hidden | on |
 | =id= | id of the grid | Any relevant name |
-| =connector= | connector ID or a topic name | a grid connector is responsible to interact with the jQGrid widget. \
+| =connector= | connector ID or a topic name; a grid connector is responsible to interact with the jQGrid widget. \
                 This can be a topic that jQGrid should use as the target of its ajax requests, or any other registered grid connector. \
-                The topic should have a =grid= section and render an appropriate XML response based on the URL parameters provided by jqGrid (page, sort, columns, etc). |
+                The topic should have a =grid= section and render an appropriate XML response based on the URL parameters provided by jqGrid (page, sort, columns, etc). | =$Foswiki::cfg{JQGridPlugin}{DefaultConnector}= |
 | =sortable= | (per column option) sort column in ascending or descending order | on |
 | =loadonce= | grid loads data from the server once, all other manipulations are done on the client side | on |
 | =multiselect= | allows selection of multiple rows in the grid | on |
@@ -73,22 +83,23 @@ When [[Foswiki:Extensions/FlexFormPlugin][FlexFormPlugin]] is installed, each ce
 When [[Foswiki:Extesions/ImagePlugin][ImagePlugin]] is installed, each Image/Photo cell is renderd using an
 =%IMAGE= expression to render thumbnails.
 
-%RED%
-WARNING: This part is still in flux and solved rather adhoc for now.
-The way how to specify which data is displayed in which way per column is still
-subject to further changes.
-%ENDCOLOR%
-
 ---++ Examples
 %GRID{
-  form="System.UserForm"
+  form="UserForm"
   web="%USERSWEB%"
   columns="Topic,FirstName,LastName,Organization,Country,Telephone"
   filterbar="on"
+  toolbar="on"
+  pager="on"
   rownumbers="on"
-  Topic_title="Link to topic"
   width="auto"
   height="auto"
+  FirstName_hidden="on"
+  LastName_hidden="on"
+  Telephone_format="%JQICON{"telephone"}% ${value}"
+  Topic_title="Name"
+  Topic_formatoptions="web:'%USERSWEB%'"
+  Topic_format="<a href='%SCRIPTURLPATH{"view"}%/${web}/${value}'>${FirstName} ${LastName}</a>"
 }%
 
 ---++ Installation Instructions
@@ -102,15 +113,21 @@ subject to further changes.
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order --> |
-|  13 Jun 2011: | 0.9.0 restructured plugin to support arbitrary Connectors; \
+|  12 Sep 2011: | (1.0) upgraded to jqgrid-4.1.2;\
+                  added =rownumwidth=, =colname_formatter=, =colname_format=, =colname_formatoptions=, =colname_hidden=; \
+                  adding styling to sorted columns; \
+                  made recoding query parameters from utf8 to site charset depending on the foswiki api version; \
+                  added new =tmpl= formatter based on %SYSTEMWEB%.JQueryTmpl to be used by the new formating code; \
+                  fixed property map for SEARCH backend (Foswiki:Main/PaulHarvey) |
+|  13 Jun 2011: | (0.9.0) restructured plugin to support arbitrary Connectors; \
                   upgraded to jqgrid-4.0.0; \
                   implemented a Foswiki:Extensions/SolrPlugin grid connector; \
                   fixed char encoding of REST data; \
                   improved SEARCH based grid connector |
-|  06 Jan 2011: | 0.3.1: Foswikitask:Item10228 - add parameters to grid to make it customizable |
-|  08 Sep 2010: | 0.3: upgraded to jqgrid-3.7.2; fixed vertical scrolling; fixed resizing of columns |
-|  19 Nov 2010: | 0.2.1: Foswikitask:Item9564 - add dependency to help script load ordering |
-|  26 May 2010: | 0.2: fixed loading locales; \
+|  06 Jan 2011: | (0.3.1) Foswikitask:Item10228 - add parameters to grid to make it customizable |
+|  08 Sep 2010: | (0.3) upgraded to jqgrid-3.7.2; fixed vertical scrolling; fixed resizing of columns |
+|  19 Nov 2010: | (0.2.1) Foswikitask:Item9564 - add dependency to help script load ordering |
+|  26 May 2010: | (0.2) fixed loading locales; \
 improved grid construction process; \
 added field-specific options (title, resizable, align, width, search); \
 ongoing work on colmodel |

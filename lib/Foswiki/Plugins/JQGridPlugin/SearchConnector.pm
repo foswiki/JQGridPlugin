@@ -44,11 +44,11 @@ sub new {
 
   # maps column names to accessors to the actual property being displayed
   $this->{propertyMap} = {
-    'Topic' => 'topic',
-    'Modified' => 'modified',
-    'Changed' => 'modified',
-    'By' => 'editby',
-    'Author' => 'editby'
+    'Topic' => 'name',
+    'Modified' => 'info.date',
+    'Changed' => 'info.date',
+    'By' => 'info.author',
+    'Author' => 'info.author'
   };
 
   return $this;
@@ -159,14 +159,14 @@ HERE
   foreach my $columnName (@selectedFields) {
     my $cell = '';
     my $propertyName = $this->column2Property($columnName);
-    if ($propertyName eq 'topic') {
+    if ($propertyName eq 'name') {
       $cell .= '$topic';
     } elsif ($propertyName =~ /^[a-zA-Z_]+$/) { # SMELL: should check if this is a defined formfield consulting the DataForm definition 
       $cell .= '$formfield(' . $propertyName . ')';
     } else {
       $cell .= '$percntQUERY{\"\'$web.$topic\'/' . $propertyName . '\"}$percnt';
     }
-    $tml .= '<cell><![CDATA[<nop>' . $cell . ']]></cell>' . "\n";    # SMELL extra space behind cell needed to work around bug in Render::getRenderedVerision
+    $tml .= '<cell name="'.$columnName.'"><![CDATA[<nop>' . $cell . ']]></cell>' . "\n";    # SMELL extra space behind cell needed to work around bug in Render::getRenderedVerision
   }
   $tml .= '</row>"}%</noautolink></literal>';
 

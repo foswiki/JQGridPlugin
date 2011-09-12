@@ -4,7 +4,22 @@ jQuery(function($) {
     cellLayout:18,
     forceFit: true,
     viewrecords: true,
-    filterToolbar: false
+    filterToolbar: false,
+    altRows: true,
+    onSortCol: function(index, iCol, sortOrder) {
+      var $table = $(this), 
+          id = $table.attr('id'),
+          $header = $("#gbox_"+id),
+          className = 'ui-jqgrid-sortcol';
+
+      // SMELL: smell
+      window.setTimeout(function() {
+        $table.find("."+className).removeClass(className);
+        $header.find("."+className).removeClass(className);
+        $table.find("tr td:nth-child("+(iCol+1)+")").addClass(className);
+        $header.find("tr th:nth-child("+(iCol+1)+")").addClass(className);
+      }, 0);
+    }
   };
 
   function init($table, options) {
@@ -15,8 +30,12 @@ jQuery(function($) {
       $table.after("<div id='"+options.pager+"'></div>");
     }
 
-    //$table.debug();
-    //$(options).debug();
+    // remove anchors from TablePlugin
+    $table.find("th a").each(function() {
+      var $this = $(this), text = $this.text();
+      $this.parent().html(text);
+    });
+
     tableToGrid($table, options);
     if (options.filterToolbar) {
       $table.jqGrid('filterToolbar');

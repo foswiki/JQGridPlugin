@@ -172,10 +172,10 @@ HERE
       my @values = $doc->values_for($propertyName);
 
       # SMELL: try some alternatives
-      @values = $doc->values_for("field_".$propertyName."_s") unless defined @values;
-      @values = $doc->values_for("field_".$propertyName."_lst") unless defined @values;
-      @values = $doc->values_for("field_".$propertyName."_dt") unless defined @values;
-      next unless defined @values;
+      @values = $doc->values_for("field_".$propertyName."_s") unless @values;
+      @values = $doc->values_for("field_".$propertyName."_lst") unless @values;
+      @values = $doc->values_for("field_".$propertyName."_dt") unless @values;
+      next unless @values;
 
       my $value = join(", ", @values);
       $value = $searcher->fromUtf8($value);
@@ -196,7 +196,7 @@ HERE
         $fieldDef->{name} = $oldFieldName;
       }
 
-      $line .= '<cell><![CDATA[' . $value . ']]></cell>' . "\n"; 
+      $line .= '<cell name="'.$columnName.'"><![CDATA[' . $value . ']]></cell>' . "\n"; 
     }
 
     $line .= "</row>\n";

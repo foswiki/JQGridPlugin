@@ -20,6 +20,7 @@ TARGET=\
   grid.locale-ja.js \
   grid.locale-jp.js \
   grid.locale-lt.js \
+  grid.locale-mne.js \
   grid.locale-nl.js \
   grid.locale-no.js \
   grid.locale-pl.js \
@@ -30,6 +31,7 @@ TARGET=\
   grid.locale-sp.js \
   grid.locale-sr.js \
   grid.locale-sv.js \
+  grid.locale-th.js \
   grid.locale-tr.js \
   grid.locale-ua.js
 

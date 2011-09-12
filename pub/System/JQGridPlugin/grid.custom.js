@@ -53,7 +53,7 @@ $.jgrid.extend({
 				var sort = $t.p.colModel[idx].sortable;
 				if ( typeof sort !== 'boolean' ) { sort =  true; }
 				if ( typeof reload !=='boolean' ) { reload = false; }
-				if ( sort ) { $t.sortData("jqgh_"+colname, idx, reload, sor); }
+				if ( sort ) { $t.sortData("jqgh_"+$t.p.id+"_" + colname, idx, reload, sor); }
 			}
 		});
 	},
@@ -148,7 +148,7 @@ $.jgrid.extend({
 					switch (this.stype) {
 						case 'select' :
 							so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : 'eq';
-							v = $("#gs_"+$.jgrid.jqID(nm),$t.grid.hDiv).val();
+							v = $("#gs_"+$.jgrid.jqID(this.name),$t.grid.hDiv).val();
 							if(v) {
 								sdata[nm] = v;
 								sopt[nm] = so;
@@ -161,7 +161,7 @@ $.jgrid.extend({
 							break;
 						case 'text':
 							so  = (this.searchoptions && this.searchoptions.sopt) ? this.searchoptions.sopt[0] : p.defaultSearch;
-							v = $("#gs_"+$.jgrid.jqID(nm), $t.grid.hDiv).val();
+							v = $("#gs_"+$.jgrid.jqID(this.name), $t.grid.hDiv).val();
 							if(v) {
 								sdata[nm] = v;
 								sopt[nm] = so;

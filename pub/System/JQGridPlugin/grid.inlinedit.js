@@ -9,12 +9,12 @@
 **/ 
 $.jgrid.extend({
 //Editing
-	editRow : function(rowid,keys,oneditfunc,succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
+	editRow : function(rowid,keys,oneditfunc,successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		// Compatible mode old versions
 		var settings = {
 			"keys" : keys || false,
 			"oneditfunc" : oneditfunc || null,
-			"successfunc" : succesfunc || null,
+			"successfunc" : successfunc || null,
 			"url" : url || null,
 			"extraparam" : extraparam || {},
 			"aftersavefunc" : aftersavefunc || null,
@@ -46,7 +46,7 @@ $.jgrid.extend({
 						try {
 							tmp =  $.unformat(this,{rowId:rowid, colModel:cm[i]},i);
 						} catch (_) {
-							tmp = $(this).html();
+							tmp =  ( cm[i].edittype && cm[i].edittype == 'textarea' ) ? $(this).text() : $(this).html();
 						}
 					}
 					if ( nm != 'cb' && nm != 'subgrid' && nm != 'rn') {
@@ -58,6 +58,7 @@ $.jgrid.extend({
 							else { $(this).html(""); }
 							var opt = $.extend({},cm[i].editoptions || {},{id:rowid+"_"+nm,name:nm});
 							if(!cm[i].edittype) { cm[i].edittype = "text"; }
+							if(tmp == "&nbsp;" || tmp == "&#160;" || (tmp.length==1 && tmp.charCodeAt(0)==160) ) {tmp='';}
 							var elc = $.jgrid.createEl(cm[i].edittype,opt,tmp,true,$.extend({},$.jgrid.ajaxOptions,$t.p.ajaxSelectOptions || {}));
 							$(elc).addClass("editable");
 							if(treeg) { $("span:first",this).append(elc); }
@@ -91,10 +92,10 @@ $.jgrid.extend({
 			}
 		});
 	},
-	saveRow : function(rowid, succesfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
+	saveRow : function(rowid, successfunc, url, extraparam, aftersavefunc,errorfunc, afterrestorefunc) {
 		// Compatible mode old versions
 		var settings = {
-			"successfunc" : succesfunc || null,
+			"successfunc" : successfunc || null,
 			"url" : url || null,
 			"extraparam" : extraparam || {},
 			"aftersavefunc" : aftersavefunc || null,
@@ -214,6 +215,7 @@ $.jgrid.extend({
 				if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 				if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid,resp); }
 				success = true;
+				$(ind).unbind("keydown");
 			} else {
 				$("#lui_"+$t.p.id).show();
 				tmp3 = $.extend({},tmp,tmp3);
@@ -226,7 +228,7 @@ $.jgrid.extend({
 						$("#lui_"+$t.p.id).hide();
 						if (stat === "success"){
 							var ret;
-							if( $.isFunction(o.succesfunc)) { ret = o.succesfunc.call($t, res);}
+							if( $.isFunction(o.successfunc)) { ret = o.successfunc.call($t, res);}
 							else { ret = true; }
 							if (ret===true) {
 								if($t.p.autoencode) {
@@ -243,6 +245,7 @@ $.jgrid.extend({
 								if(fr >= 0) { $t.p.savedRow.splice(fr,1); }
 								if( $.isFunction(o.aftersavefunc) ) { o.aftersavefunc.call($t, rowid,res); }
 								success = true;
+								$(ind).unbind("keydown");
 							} else {
 								if($.isFunction(o.errorfunc) ) {
 									o.errorfunc.call($t, rowid, res, stat);
@@ -271,7 +274,6 @@ $.jgrid.extend({
 					}
 				}, $.jgrid.ajaxOptions, $t.p.ajaxRowOptions || {}));
 			}
-			$(ind).unbind("keydown");
 		}
 		return success;
 	},

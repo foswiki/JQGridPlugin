@@ -190,7 +190,7 @@ sub search {
         $fieldDef->{name} = $oldFieldName;
       }
       
-      $line .= '<cell><![CDATA[' . $cell . ']]></cell>' . "\n"; 
+      $line .= '<cell name="'.$columnName.'"><![CDATA[' . $cell . ']]></cell>' . "\n"; 
     }
 
     $line .= "</row>\n";

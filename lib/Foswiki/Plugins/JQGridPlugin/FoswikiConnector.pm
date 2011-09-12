@@ -77,7 +77,11 @@ sub restHandleSave {
   foreach my $key (@params) {
     next if $key =~ /^(id|oper)$/;
     my $val = $request->param($key);
-    $val = Foswiki::Plugins::JQGridPlugin::Connector::fromUtf8($val);
+
+    # only required on older foswikis
+    if ($Foswiki::Plugins::VERSION < 2.2) {
+      $val = Foswiki::Plugins::JQGridPlugin::Connector::fromUtf8($val);
+    }
 
     $val =~ s/^\s+//;
     $val =~ s/\s+$//;

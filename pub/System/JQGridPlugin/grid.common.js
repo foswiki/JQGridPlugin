@@ -160,6 +160,7 @@ $.extend($.jgrid,{
 			toTop: true,
 			overlay: 10,
 			modal: false,
+			overlayClass : 'ui-widget-overlay',
 			onShow: this.showModal,
 			onHide: this.closeModal,
 			gbox: '',
@@ -277,8 +278,11 @@ $.extend($.jgrid,{
 			}
 			return opt;
 		}
-		function setAttributes(elm, atr) {
+		function setAttributes(elm, atr, exl ) {
 			var exclude = ['dataInit','dataEvents','dataUrl', 'buildSelect','sopt', 'searchhidden', 'defaultValue', 'attr'];
+			if(typeof(exl) != "undefined" && $.isArray(exl)) {
+				exclude = $.extend(exclude, exl);
+			}
 			$.each(atr, function(key, value){
 				if($.inArray(key, exclude) === -1) {
 					$(elm).attr(key,value);
@@ -324,7 +328,7 @@ $.extend($.jgrid,{
 					elem.value = cbval[0];
 					$(elem).attr("offval",cbval[1]);
 				}
-				setAttributes(elem, options);
+				setAttributes(elem, options, ['value']);
 				options = bindEv(elem,options);
 				$(elem).attr("role","checkbox");
 			break;
@@ -415,7 +419,7 @@ $.extend($.jgrid,{
 							}
 						}
 					}
-					setAttributes(elem, options);
+					setAttributes(elem, options, ['value']);
 					options = bindEv(elem,options);
 				}
 			break;

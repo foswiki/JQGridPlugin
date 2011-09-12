@@ -14,12 +14,12 @@ jQuery(selector).each(function() {
 	var w = jQuery(this).width();
 
 	// Text whether we have single or multi select
-	var inputCheckbox = jQuery('input[type=checkbox]:first', jQuery(this));
-	var inputRadio = jQuery('input[type=radio]:first', jQuery(this));
+	var inputCheckbox = jQuery('tr td:first-child input[type=checkbox]:first', jQuery(this));
+	var inputRadio = jQuery('tr td:first-child input[type=radio]:first', jQuery(this));
 	var selectMultiple = inputCheckbox.length > 0;
 	var selectSingle = !selectMultiple && inputRadio.length > 0;
 	var selectable = selectMultiple || selectSingle;
-	var inputName = inputCheckbox.attr("name") || inputRadio.attr("name");
+	//var inputName = inputCheckbox.attr("name") || inputRadio.attr("name");
 
 	// Build up the columnModel and the data
 	var colModel = [];
