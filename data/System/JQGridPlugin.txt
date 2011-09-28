@@ -113,6 +113,7 @@ When [[Foswiki:Extesions/ImagePlugin][ImagePlugin]] is installed, each Image/Pho
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order --> |
+|  28 Sep 2011: | (1.01) removed spurious =console.log()= which of course breaks jqgrid on some browsers |
 |  12 Sep 2011: | (1.0) upgraded to jqgrid-4.1.2;\
                   added =rownumwidth=, =colname_formatter=, =colname_format=, =colname_formatoptions=, =colname_hidden=; \
                   adding styling to sorted columns; \

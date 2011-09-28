@@ -17,7 +17,7 @@ use strict;
 use warnings;
 
 our $VERSION = '$Rev$';
-our $RELEASE = '2.00';
+our $RELEASE = '1.01';
 our $SHORTDESCRIPTION = 'jQuery grid widget for Foswiki';
 our $NO_PREFS_IN_TOPIC = 1;
 our $doInit = 0;

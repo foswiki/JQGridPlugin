@@ -68,9 +68,6 @@ jQuery(function($) {
       data[key] = val;
     });
 
-    //console.log("rowData=",rowData);
-    //console.log("data=",data);
-
     if($.fmatter.isUndefined(data.template)) {
       return $.fn.fmatter.defaultFormat(cellVal, opts);
     }
