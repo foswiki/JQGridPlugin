@@ -116,7 +116,7 @@ If guests are to make use of %TOPIC% without being logged in, remove the =rest= 
 
 *FAQ topics:*
 %GRID{
- form="FAQForm"
+ form="%SYSTEMWEB%.FAQForm"
  filterbar="on"
  toolbar="on"
  pager="on"
