@@ -84,6 +84,18 @@ When [[Foswiki:Extesions/ImagePlugin][ImagePlugin]] is installed, each Image/Pho
 =%IMAGE= expression to render thumbnails.
 
 ---++ Examples
+%IF{
+  "{AuthScripts}=~'\brest\b'"
+  then="<blockquote class='foswikiHelp'>
+    $percntX$percnt Users of this wiki need to be logged in to use %TOPIC%.
+
+If guests are to make use of %TOPIC% without being logged in, remove the =rest= script from ={AuthScripts}= in [[%SCRIPTURLPATH{"configure"}%#Login$SecurityAndAuthentication][configure]] under Security and Authentication -> Login. See also: [[UserAuthentication]]
+    $percntIF{
+      \"NOT context authenticated\"
+      then=\"$n$dollarpercntX$dollarpercnt You are not logged in, so the examples below will not work\"
+    }$percnt</blockquote>"
+}%
+*Users:*
 %GRID{
   form="UserForm"
   web="%USERSWEB%"
@@ -102,6 +114,16 @@ When [[Foswiki:Extesions/ImagePlugin][ImagePlugin]] is installed, each Image/Pho
   Topic_format="<a href='%SCRIPTURLPATH{"view"}%/${web}/${value}'>${FirstName} ${LastName}</a>"
 }%
 
+*FAQ topics:*
+%GRID{
+ form="FAQForm"
+ filterbar="on"
+ toolbar="on"
+ pager="on"
+ width="auto"
+ height="auto"
+}%
+
 ---++ Installation Instructions
 
 %$INSTALL_INSTRUCTIONS%
@@ -113,6 +135,9 @@ When [[Foswiki:Extesions/ImagePlugin][ImagePlugin]] is installed, each Image/Pho
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order --> |
+|  19 Oct 2011: | (2.02) Fixed bugs with SEARCH connector: broken on Foswiki 1.1.x, corrected column sorting quirks;\
+                         added some code to help when =LocalSite.cfg= settings are missing;\
+                         added notes regarding ={AuthScripts}= |
 |  28 Sep 2011: | (2.01) removed spurious =console.log()= which of course breaks jqgrid on some browsers |
 |  12 Sep 2011: | (1.0) upgraded to jqgrid-4.1.2;\
                   added =rownumwidth=, =colname_formatter=, =colname_format=, =colname_formatoptions=, =colname_hidden=; \

@@ -17,7 +17,7 @@ use strict;
 use warnings;
 
 our $VERSION = '$Rev$';
-our $RELEASE = '2.01';
+our $RELEASE = '2.02';
 our $SHORTDESCRIPTION = 'jQuery grid widget for Foswiki';
 our $NO_PREFS_IN_TOPIC = 1;
 our $doInit = 0;
@@ -66,8 +66,8 @@ sub restGridConnector {
 
   my $request = Foswiki::Func::getCgiQuery();
 
-  my $connectorID = $request->param('connector') || $Foswiki::cfg{JQGridPlugin}{DefaultConnector};
-  my $connectorClass = $Foswiki::cfg{JQGridPlugin}{Connector}{$connectorID};
+  my $connectorID = $request->param('connector') || $Foswiki::cfg{JQGridPlugin}{DefaultConnector} || 'search';
+  my $connectorClass = $Foswiki::cfg{JQGridPlugin}{Connector}{$connectorID} || 'Foswiki::Plugins::JQGridPlugin::SearchConnector';
 
 
   unless ($connectorClass) {

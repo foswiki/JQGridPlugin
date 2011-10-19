@@ -50,10 +50,17 @@ sub new {
     'By' => 'info.author',
     'Author' => 'info.author'
   };
+  # maps column names to accessors appropriate for sorting
+  $this->{sortPropertyMap} = {
+    'Topic' => 'topic',
+    'Modified' => 'modified',
+    'Changed' => 'modified',
+    'By' => 'editby',
+    'Author' => 'editby'
+  };
 
   return $this;
 }
-
 
 =begin TML
 
@@ -115,6 +122,12 @@ sub restHandleSearch {
   $this->{session}->writeCompletePage($result, 'view', 'text/xml');
 }
 
+sub column2SortProperty {
+  my ($this, $column) = @_;
+
+  return $this->{sortPropertyMap}{$column} || "formfield($column)";
+}
+
 =begin TML
 
 ---++ ClassMethod search( $web, %params ) -> $xml
@@ -129,10 +142,7 @@ sub search {
   my $context = Foswiki::Func::getContext();
 
   # TODO: get this sorted out
-  my $order = $this->column2Property($params{sort});
-  if ($order =~ /^[a-zA-Z-_]+$/) { # SMELL: poor-man's formfield check
-    $order = "formfield($order)";
-  }
+  my $order = $this->column2SortProperty($params{sort});
 
   my $tml = <<"HERE";
 <literal><noautolink>%SEARCH{
@@ -148,10 +158,10 @@ sub search {
   pagerformat=" "
       pagerformat2="<page>\$currentpage</page>
       <total>\$numberofpages</total>
-      <records>\$percntQUERY{\$numberofpages * \$pagesize}\$percnt</records>\$n"
+      <records>\$percntCALC{\$EVAL(\$numberofpages * \$pagesize)}\$percnt</records>\$n"
   footer="\$n</rows>"
   header="<?xml version='1.0' encoding='utf-8'?><rows>
-  <page>\$currentpage</page><total>\$numberofpages</total><records>\$percntQUERY{\$numberofpages * \$pagesize}\$percnt</records>\$n"
+  <page>\$currentpage</page><total>\$numberofpages</total><records>\$percntCALC{\$EVAL(\$numberofpages * \$pagesize)}\$percnt</records>\$n"
   format="<row id='\$web.\$topic'>
 HERE
 
@@ -166,7 +176,7 @@ HERE
     } else {
       $cell .= '$percntQUERY{\"\'$web.$topic\'/' . $propertyName . '\"}$percnt';
     }
-    $tml .= '<cell name="'.$columnName.'"><![CDATA[<nop>' . $cell . ']]></cell>' . "\n";    # SMELL extra space behind cell needed to work around bug in Render::getRenderedVerision
+    $tml .= '<cell name=\"'.$columnName.'\"><![CDATA[<nop>' . $cell . ']]></cell>' . "\n";    # SMELL extra space behind cell needed to work around bug in Render::getRenderedVerision
   }
   $tml .= '</row>"}%</noautolink></literal>';
 

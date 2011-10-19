@@ -46,6 +46,15 @@ sub new {
   my $class = shift;
   my $session = shift || $Foswiki::Plugins::SESSION;
 
+  $Foswiki::cfg{JQGridPlugin}{DefaultConnector} = 'search'
+    unless defined $Foswiki::cfg{JQGridPlugin}{DefaultConnector};
+  $Foswiki::cfg{JQGridPlugin}{Connector}{search} = 'Foswiki::Plugins::JQGridPlugin::SearchConnector'
+    unless defined $Foswiki::cfg{JQGridPlugin}{Connector}{search};
+  $Foswiki::cfg{JQGridPlugin}{Connector}{dbcache} = 'Foswiki::Plugins::JQGridPlugin::DBCacheConnector'
+    unless defined $Foswiki::cfg{JQGridPlugin}{Connector}{dbcache};
+  $Foswiki::cfg{JQGridPlugin}{Connector}{solr} = 'Foswiki::Plugins::JQGridPlugin::SolrConnector'
+    unless defined $Foswiki::cfg{JQGridPlugin}{Connector}{solr};
+
   my $this = bless($class->SUPER::new( 
     $session,
     name => 'Grid',
