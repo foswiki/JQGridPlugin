@@ -89,13 +89,16 @@ When [[Foswiki:Extesions/ImagePlugin][ImagePlugin]] is installed, each Image/Pho
   then="<blockquote class='foswikiHelp'>
     $percntX$percnt Users of this wiki need to be logged in to use %TOPIC%.
 
-If guests are to make use of %TOPIC% without being logged in, remove the =rest= script from ={AuthScripts}= in [[%SCRIPTURLPATH{"configure"}%#Login$SecurityAndAuthentication][configure]] under Security and Authentication -> Login. See also: [[UserAuthentication]]
+If guests are to make use of %TOPIC% without being logged in, remove the =rest= script from ={AuthScripts}= in [[%SCRIPTURLPATH{"configure"}%#Login$SecurityAndAuthentication][configure]] under Security and Authentication -> Login. See also: [[%SYSTEMWEB%.UserAuthentication][UserAuthentication]]
     $percntIF{
       \"NOT context authenticated\"
       then=\"$n$dollarpercntX$dollarpercnt You are not logged in, so the examples below will not work\"
     }$percnt</blockquote>"
 }%
-*Users:*
+*Users*, demonstrating customised columns:
+%TWISTY{showlink="Code..."}%
+%JQREQUIRE{"chili"}%<verbatim class="tml">%STARTSECTION{"UsersExample"}%
+
 %GRID{
   form="UserForm"
   web="%USERSWEB%"
@@ -114,15 +117,27 @@ If guests are to make use of %TOPIC% without being logged in, remove the =rest= 
   Topic_format="<a href='%SCRIPTURLPATH{"view"}%/${web}/${value}'>${FirstName} ${LastName}</a>"
 }%
 
-*FAQ topics:*
+%ENDSECTION{"UsersExample"}%</verbatim>
+%ENDTWISTY%
+%INCLUDE{"%TOPIC%" section="UsersExample"}%
+
+*FAQ topics*, demonstrating custom =query= with =search= connector:
+%TWISTY{showlink="Code..."}%
+<verbatim class="tml">%STARTSECTION{"FAQTopicsExample"}%
+
 %GRID{
+ query="form.name='FAQForm' OR form.name='%SYSTEMWEB%.FAQForm'"
+ connector="search"
  form="%SYSTEMWEB%.FAQForm"
+ web="%SYSTEMWEB%"
  filterbar="on"
- toolbar="on"
  pager="on"
  width="auto"
- height="auto"
 }%
+
+%ENDSECTION{"FAQTopicsExample"}%</verbatim>
+%ENDTWISTY%
+%INCLUDE{"%TOPIC%" section="FAQTopicsExample"}%
 
 ---++ Installation Instructions
 
