@@ -137,26 +137,26 @@ If guests are to make use of %TOPIC% without being logged in, remove the =rest= 
 |  Change History: | <!-- versions below in reverse order --> |
 |  19 Oct 2011: | (2.02) Fixed bugs with SEARCH connector: broken on Foswiki 1.1.x, corrected column sorting quirks;\
                          added some code to help when =LocalSite.cfg= settings are missing;\
-                         added notes regarding ={AuthScripts}= |
+                         added notes regarding ={AuthScripts}= (Foswiki:Main/PaulHarvey) |
 |  28 Sep 2011: | (2.01) removed spurious =console.log()= which of course breaks jqgrid on some browsers |
-|  12 Sep 2011: | (1.0) upgraded to jqgrid-4.1.2;\
-                  added =rownumwidth=, =colname_formatter=, =colname_format=, =colname_formatoptions=, =colname_hidden=; \
-                  adding styling to sorted columns; \
-                  made recoding query parameters from utf8 to site charset depending on the foswiki api version; \
-                  added new =tmpl= formatter based on %SYSTEMWEB%.JQueryTmpl to be used by the new formating code; \
-                  fixed property map for SEARCH backend (Foswiki:Main/PaulHarvey) |
+|  12 Sep 2011: | (1.00) upgraded to jqgrid-4.1.2;\
+                         added =rownumwidth=, =colname_formatter=, =colname_format=, =colname_formatoptions=, =colname_hidden=; \
+                         adding styling to sorted columns; \
+                         made recoding query parameters from utf8 to site charset depending on the foswiki api version; \
+                         added new =tmpl= formatter based on %SYSTEMWEB%.JQueryTmpl to be used by the new formating code; \
+                         fixed property map for SEARCH backend (Foswiki:Main/PaulHarvey) |
 |  13 Jun 2011: | (0.9.0) restructured plugin to support arbitrary Connectors; \
-                  upgraded to jqgrid-4.0.0; \
-                  implemented a Foswiki:Extensions/SolrPlugin grid connector; \
-                  fixed char encoding of REST data; \
-                  improved SEARCH based grid connector |
+                         upgraded to jqgrid-4.0.0; \
+                         implemented a Foswiki:Extensions/SolrPlugin grid connector; \
+                         fixed char encoding of REST data; \
+                         improved SEARCH based grid connector |
 |  06 Jan 2011: | (0.3.1) Foswikitask:Item10228 - add parameters to grid to make it customizable |
 |  08 Sep 2010: | (0.3) upgraded to jqgrid-3.7.2; fixed vertical scrolling; fixed resizing of columns |
 |  19 Nov 2010: | (0.2.1) Foswikitask:Item9564 - add dependency to help script load ordering |
 |  26 May 2010: | (0.2) fixed loading locales; \
-improved grid construction process; \
-added field-specific options (title, resizable, align, width, search); \
-ongoing work on colmodel |
+                        improved grid construction process; \
+                        added field-specific options (title, resizable, align, width, search); \
+                        ongoing work on colmodel |
 |  26 Mar 2010: | initial release, externalized from Foswiki:Extensions/JQueryPlugin |
 |  Dependencies: | %$DEPENDENCIES% |
 |  Home: | Foswiki:Extensions/%TOPIC% |
