@@ -19,4 +19,10 @@ $Foswiki::cfg{JQGridPlugin}{Connector}{dbcache} = 'Foswiki::Plugins::JQGridPlugi
 # Implementation handling the <code>solr</code> connector. This will require SolrPlugin to be installed.
 $Foswiki::cfg{JQGridPlugin}{Connector}{solr} = 'Foswiki::Plugins::JQGridPlugin::SolrConnector';
 
+# **PERL**
+# Perl hashmap to integrate with custom grid connectors.
+$Foswiki::cfg{JQGridPlugin}{ExternalConnectors} = {
+    my_grid_connector => 'Foswiki::Plugins::MyGridConnectorPlugin::MyConnector'
+};
+
 1;

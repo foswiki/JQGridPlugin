@@ -139,6 +139,23 @@ If guests are to make use of %TOPIC% without being logged in, remove the =rest= 
 %ENDTWISTY%
 %INCLUDE{"%TOPIC%" section="FAQTopicsExample"}%
 
+---++ Grid Connectors
+
+JQGridPlugin is shipped with three connectors:
+   * search - The default connector that uses native Foswiki search.
+   * dbcache - Works with DBCachePlugin.
+   * solr - Works with SolrPlugin.
+
+You can also create your own custom grid connectors by adding the class name to the !ExternalConnectors configure option.
+All parameters to %<nop>GRID% that end in =_connectorparam= will be passed along to your grid connector.
+Custom grid connectors must process the following parameters:
+<verbatim>
+  my $sortColumn = $request->param('sidx') || $columns[0];
+  my $sortOrder = $request->param('sord') || 'asc';
+  my $rowsPerPage = $request->param('rows') || 10;
+  my $curPage = $request->param('page') || 1;
+</verbatim>
+
 ---++ Installation Instructions
 
 %$INSTALL_INSTRUCTIONS%
@@ -154,7 +171,8 @@ If guests are to make use of %TOPIC% without being logged in, remove the =rest= 
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order --> |
-|  18 May 2012: | (2.03) GRID macro now passes _connectorparam parameters to the grid connector |
+|  18 May 2012: | (2.03) GRID macro now passes _connectorparam parameters to the grid connector; \
+                         Added ExternalConnectors configure parameter. (Foswiki:Main/KipLubliner) |
 |  19 Oct 2011: | (2.02) Fixed bugs with SEARCH connector: broken on Foswiki 1.1.x, corrected column sorting quirks;\
                          added some code to help when =LocalSite.cfg= settings are missing;\
                          added notes regarding ={AuthScripts}= (Foswiki:Main/PaulHarvey) |

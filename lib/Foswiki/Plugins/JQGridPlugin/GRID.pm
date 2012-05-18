@@ -381,7 +381,7 @@ EOT
       );
     } else {
 
-      if (defined $Foswiki::cfg{JQGridPlugin}{Connector}{$theConnector}) {
+      if (defined $Foswiki::cfg{JQGridPlugin}{Connector}{$theConnector} || defined $Foswiki::cfg{JQGridPlugin}{ExternalConnectors}{$theConnector}) {
         $gridConnectorUrl = Foswiki::Func::getScriptUrl(
           'JQGridPlugin', 'gridconnector', 'rest',
           web => $theWeb,
