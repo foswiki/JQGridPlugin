@@ -355,6 +355,13 @@ EOT
 
     push @metadata, 'colModel: ['.join(",\n", @colModels).']';
 
+    # Connector parameters
+    my @connParams = ();
+    while(my ($k,$v) = each %$params) {
+      next unless $k =~ /_connectorparam$/;
+      push @connParams, $k, $v;
+    }
+
     my $baseWeb = $session->{webName};
     my $baseTopic = $session->{topicName};
     my $gridConnectorUrl;
@@ -383,6 +390,7 @@ EOT
           query => $theQuery,
           columns => join(',', @selectedFields),
           connector => $theConnector,
+          @connParams
         );
       } else {
         throw Error::Simple("unknown grid connector $theConnector"); # SMELL: where's the catch
