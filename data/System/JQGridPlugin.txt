@@ -172,7 +172,7 @@ Custom grid connectors must process the following parameters:
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order --> |
 |  18 May 2012: | (2.03) GRID macro now passes _connectorparam parameters to the grid connector; \
-                         Added ExternalConnectors configure parameter. (Foswiki:Main/KipLubliner) |
+                         Added !ExternalConnectors configure parameter. (Foswiki:Main/KipLubliner) |
 |  19 Oct 2011: | (2.02) Fixed bugs with SEARCH connector: broken on Foswiki 1.1.x, corrected column sorting quirks;\
                          added some code to help when =LocalSite.cfg= settings are missing;\
                          added notes regarding ={AuthScripts}= (Foswiki:Main/PaulHarvey) |
