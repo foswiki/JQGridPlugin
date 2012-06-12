@@ -15,6 +15,8 @@ JSSOURCE=\
    grid.celledit.js\
    jqModal.js\
    jqDnR.js\
+   jquery.tablednd.js \
+   jquery.contextmenu.js \
    grid.subgrid.js\
    grid.treegrid.js\
    grid.grouping.js\

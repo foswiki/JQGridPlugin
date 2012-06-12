@@ -81,6 +81,12 @@ pub/System/JQGridPlugin/i18n/grid.locale-gl.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-he.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-he.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-he.uncompressed.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-hr1250.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-hr1250.js.gz 0644
+pub/System/JQGridPlugin/i18n/grid.locale-hr1250.uncompressed.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-hr.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-hr.js.gz 0644
+pub/System/JQGridPlugin/i18n/grid.locale-hr.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-hu.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-hu.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-is.js 0644
@@ -129,6 +135,9 @@ pub/System/JQGridPlugin/i18n/grid.locale-sp.js.gz 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sp.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sr.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sr.js.gz 0644
+pub/System/JQGridPlugin/i18n/grid.locale-sr-latin.js 0644
+pub/System/JQGridPlugin/i18n/grid.locale-sr-latin.js.gz 0644
+pub/System/JQGridPlugin/i18n/grid.locale-sr-latin.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sr.uncompressed.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sv.js 0644
 pub/System/JQGridPlugin/i18n/grid.locale-sv.js.gz 0644
@@ -146,6 +155,7 @@ pub/System/JQGridPlugin/i18n/Makefile 0644
 pub/System/JQGridPlugin/jqDnR.js 0644
 pub/System/JQGridPlugin/jqModal.js 0644
 pub/System/JQGridPlugin/jquery.additional-fmatter.js 0644
+pub/System/JQGridPlugin/jquery.contextmenu.js 0644
 pub/System/JQGridPlugin/jquery.fmatter.js 0644
 pub/System/JQGridPlugin/jquery.jqgrid.init.js 0644
 pub/System/JQGridPlugin/jquery.jqgrid.init.js.gz 0644
@@ -154,6 +164,7 @@ pub/System/JQGridPlugin/jquery.jqgrid.js 0644
 pub/System/JQGridPlugin/jquery.jqgrid.js.gz 0644
 pub/System/JQGridPlugin/jquery.jqgrid.uncompressed.js 0644
 pub/System/JQGridPlugin/jquery.searchFilter.js 0644
+pub/System/JQGridPlugin/jquery.tablednd.js 0644
 pub/System/JQGridPlugin/JsonXml.js 0644
 pub/System/JQGridPlugin/Makefile 0644
 pub/System/JQGridPlugin/Makefile.include 0644

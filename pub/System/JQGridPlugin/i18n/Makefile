@@ -15,6 +15,8 @@ TARGET=\
   grid.locale-fr.js \
   grid.locale-gl.js \
   grid.locale-he.js \
+  grid.locale-hr1250.js \
+  grid.locale-hr.js \
   grid.locale-is.js \
   grid.locale-it.js \
   grid.locale-ja.js \
@@ -30,6 +32,7 @@ TARGET=\
   grid.locale-ru.js \
   grid.locale-sp.js \
   grid.locale-sr.js \
+  grid.locale-sr-latin.js \
   grid.locale-sv.js \
   grid.locale-th.js \
   grid.locale-tr.js \

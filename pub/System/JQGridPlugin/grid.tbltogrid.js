@@ -9,8 +9,7 @@ function tableToGrid(selector, options) {
 jQuery(selector).each(function() {
 	if(this.grid) {return;} //Adedd from Tony Tomov
 	// This is a small "hack" to make the width of the jqGrid 100%
-        // 2010-09-15: Michael Daum, disabled
-	//jQuery(this).width("99%");
+	jQuery(this).width("99%");
 	var w = jQuery(this).width();
 
 	// Text whether we have single or multi select
@@ -53,7 +52,7 @@ jQuery(selector).each(function() {
 				var input = jQuery('input', jQuery(this));
 				var rowId = input.attr("value");
 				rowIds.push(rowId || data.length);
-				if (input.attr("checked")) {
+				if (input.is(":checked")) {
 					rowChecked.push(rowId);
 				}
 				row[colModel[rowPos].name] = input.attr("value");
@@ -71,7 +70,7 @@ jQuery(selector).each(function() {
 	// Mark it as jqGrid
 	jQuery(this).addClass("scroll");
 
-        var thisOpts = jQuery.extend({
+	jQuery(this).jqGrid(jQuery.extend({
 		datatype: "local",
 		width: w,
 		colNames: colNames,
@@ -79,9 +78,7 @@ jQuery(selector).each(function() {
 		multiselect: selectMultiple
 		//inputName: inputName,
 		//inputValueCol: imputName != null ? "__selection__" : null
-	}, options || {});
-
-	jQuery(this).jqGrid(thisOpts);
+	}, options || {}));
 
 	// Add data
 	var a;
@@ -105,10 +102,5 @@ jQuery(selector).each(function() {
 	for (a = 0; a < rowChecked.length; a++) {
 		jQuery(this).jqGrid("setSelection",rowChecked[a]);
 	}
-
-        // workaround to fix rowNum
-        if (thisOpts.rowNum) {
-          jQuery(this).trigger("reloadGrid");
-        }
 });
 };
