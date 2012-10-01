@@ -2,12 +2,12 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license jqGrid  4.3.3  - jQuery Grid
+ * @license jqGrid  4.4.0  - jQuery Grid
  * Copyright (c) 2008, Tony Tomov, tony@trirand.com
  * Dual licensed under the MIT and GPL licenses
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2012-05-31
+ * Date: 2012-06-14
  */
 //jsHint options
 /*global document, window, jQuery, DOMParser, ActiveXObject, $, alert */
@@ -16,7 +16,7 @@
 "use strict";
 $.jgrid = $.jgrid || {};
 $.extend($.jgrid,{
-	version : "4.3.3",
+	version : "4.4.0",
 	htmlDecode : function(value){
 		if(value && (value=='&nbsp;' || value=='&#160;' || (value.length===1 && value.charCodeAt(0)===160))) { return "";}
 		return !value ? value : String(value).replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&quot;/g, '"').replace(/&amp;/g, "&");		
@@ -750,7 +750,7 @@ $.fn.jqGrid = function( pin ) {
 			data : [],
 			_index : {},
 			grouping : false,
-			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], groupDataSorted : false, summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus'},
+			groupingView : {groupField:[],groupOrder:[], groupText:[],groupColumnShow:[],groupSummary:[], showSummaryOnHide: false, sortitems:[], sortnames:[], summary:[],summaryval:[], plusicon: 'ui-icon-circlesmall-plus', minusicon: 'ui-icon-circlesmall-minus'},
 			ignoreCase : false,
 			cmTemplate : {},
 			idPrefix : ""
@@ -874,7 +874,7 @@ $.fn.jqGrid = function( pin ) {
 						p.page = page;
 						if (empty) {
 							grid.selectionPreserver(table[0]);
-							grid.emptyRows(grid.bDiv,false, false);
+							grid.emptyRows.call(table[0], false, false);
 						}
 						grid.populate(npage);
 					}
@@ -923,6 +923,12 @@ $.fn.jqGrid = function( pin ) {
 		if(this.tagName.toUpperCase()!='TABLE') {
 			alert("Element is not a table");
 			return;
+		}
+		if(document.documentMode !== undefined ) { // IE only
+			if(document.documentMode <= 5) {
+				alert("Grid can not be used in this ('quirks') mode!");
+				return;
+			}
 		}
 		$(this).empty().attr("tabindex","1");
 		this.p = p ;
@@ -1049,20 +1055,23 @@ $.fn.jqGrid = function( pin ) {
 			}
 			return order;
 		},
-		emptyRows = function (parent, scroll, locdata) {
-			if(ts.p.deepempty) {$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first tr:gt(0)").remove();}
-			else {
-				var trf = $("#"+$.jgrid.jqID(ts.p.id)+" tbody:first tr:first")[0];
-				$("#"+$.jgrid.jqID(ts.p.id)+" tbody:first").empty().append(trf);
+		emptyRows = function (scroll, locdata) {
+			var firstrow;
+			if (this.p.deepempty) {
+				$(this.rows).slice(1).remove();
+			} else {
+				firstrow = this.rows.length > 0 ? this.rows[0] : null;
+				$(this.firstChild).empty().append(firstrow);
 			}
-			if (scroll && ts.p.scroll) {
-				$(">div:first", parent).css({height:"auto"}).children("div:first").css({height:0,display:"none"});
-				parent.scrollTop = 0;
+			if (scroll && this.p.scroll) {
+				$(this.grid.bDiv.firstChild).css({height: "auto"});
+				$(this.grid.bDiv.firstChild.firstChild).css({height: 0, display: "none"});
+				if (this.grid.bDiv.scrollTop !== 0) {
+					this.grid.bDiv.scrollTop = 0;
+				}
 			}
-			if(locdata === true) {
-				if(ts.p.treeGrid === true ) {
-				ts.p.data = []; ts.p._index = {};
-			}
+			if(locdata === true && this.p.treeGrid) {
+				this.p.data = []; this.p._index = {};
 			}
 		},
 		refreshIndex = function() {
@@ -1126,7 +1135,7 @@ $.fn.jqGrid = function( pin ) {
 			ts.p.reccount = 0;
 			if($.isXMLDoc(xml)) {
 				if(ts.p.treeANode===-1 && !ts.p.scroll) {
-					emptyRows(t,false, true);
+					emptyRows.call(ts, false, true);
 					rcnt=1;
 				} else { rcnt = rcnt > 1 ? rcnt :1; }
 			} else { return; }
@@ -1166,7 +1175,7 @@ $.fn.jqGrid = function( pin ) {
 			var gxml = $.jgrid.getXmlData( xml, xmlRd.root, true);
 			gxml = $.jgrid.getXmlData( gxml, xmlRd.row, true);
 			if (!gxml) { gxml = []; }
-			var gl = gxml.length, j=0, grpdata={}, rn = parseInt(ts.p.rowNum,10);
+			var gl = gxml.length, j=0, grpdata=[], rn = parseInt(ts.p.rowNum,10);
 			if (gl > 0 &&  ts.p.page <= 0) { ts.p.page = 1; }
 			if(gxml && gl){
 			var br=ts.p.scroll?$.jgrid.randId():1,altr;
@@ -1290,7 +1299,7 @@ $.fn.jqGrid = function( pin ) {
 			var startReq = new Date();
 			if(data) {
 				if(ts.p.treeANode === -1 && !ts.p.scroll) {
-					emptyRows(t,false, true);
+					emptyRows.call(ts, false, true);
 					rcnt=1;
 				} else { rcnt = rcnt > 1 ? rcnt :1; }
 			} else { return; }
@@ -1332,7 +1341,7 @@ $.fn.jqGrid = function( pin ) {
 			if (len > 0 && ts.p.page <= 0) { ts.p.page = 1; }
 			var rn = parseInt(ts.p.rowNum,10),br=ts.p.scroll?$.jgrid.randId():1, altr;
 			if (adjust) { rn *= adjust+1; }
-			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata={}, hiderow=ts.p.grouping && ts.p.groupingView.groupCollapse === true;
+			var afterInsRow = $.isFunction(ts.p.afterInsertRow), grpdata=[], hiderow=ts.p.grouping && ts.p.groupingView.groupCollapse === true;
 			while (i<len) {
 				cur = drows[i];
 				idr = $.jgrid.getAccessor(cur,idn);
@@ -1490,8 +1499,8 @@ $.fn.jqGrid = function( pin ) {
 							if (typeof this.index != 'undefined') {
 								grindex = this.index;
 							}
-							grtypes[gin] = cmtypes[this.name];
-							grindexes[gin] = grindex;
+							grtypes[gin] = cmtypes[grindex];
+							grindexes[gin]= grindex;
 						}
 					}
 				}
@@ -1589,7 +1598,6 @@ $.fn.jqGrid = function( pin ) {
 				for(gin=0; gin<lengrp;gin++) {
 					query.orderBy(grindexes[gin],grpview.groupOrder[gin],grtypes[gin].stype, grtypes[gin].srcfmt);
 				}
-				grpview.groupDataSorted = true;
 			}
 			if (st && ts.p.sortorder && fndsort) {
 				if(ts.p.sortorder.toUpperCase() == "DESC") {
@@ -1751,9 +1759,11 @@ $.fn.jqGrid = function( pin ) {
 				}
 				if(ts.p.grouping) {
 					$(ts).jqGrid('groupingSetup');
-					if(ts.p.groupingView.groupDataSorted === true) {
-						prm[pN.sort] = ts.p.groupingView.groupField[0] +" "+ ts.p.groupingView.groupOrder[0]+", "+prm[pN.sort];
+					var grp = ts.p.groupingView, gi, gs="";
+					for(gi=0;gi<grp.groupField.length;gi++) {
+						gs += grp.groupField[gi]+" "+grp.groupOrder[gi]+", ";
 					}
+					prm[pN.sort] = gs + prm[pN.sort];
 				}
 				$.extend(ts.p.postData,prm);
 				var rcnt = !ts.p.scroll ? 1 : ts.rows.length-1;
@@ -2017,7 +2027,7 @@ $.fn.jqGrid = function( pin ) {
 			}
 			if(ts.p.scroll) {
 				var sscroll = ts.grid.bDiv.scrollLeft;
-				emptyRows(ts.grid.bDiv,true, false);
+				emptyRows.call(ts, true, false);
 				ts.grid.hDiv.scrollLeft = sscroll;
 			}
 			if(ts.p.subGrid && ts.p.datatype=='local') {
@@ -2045,8 +2055,10 @@ $.fn.jqGrid = function( pin ) {
 					cl++;
 				}
 			});
-			if(isNaN(ts.p.width)) {ts.p.width = grid.width = initwidth;}
-			else { grid.width = ts.p.width;}
+			if(isNaN(ts.p.width)) {
+				ts.p.width  = initwidth + ((ts.p.shrinkToFit ===false && !isNaN(ts.p.height)) ? scw : 0);
+			}
+			grid.width = ts.p.width;
 			ts.p.tblwidth = initwidth;
 			if(ts.p.shrinkToFit ===false && ts.p.forceFit === true) {ts.p.forceFit=false;}
 			if(ts.p.shrinkToFit===true && vc > 0) {
@@ -2436,7 +2448,7 @@ $.fn.jqGrid = function( pin ) {
 				if(ts.p.multiselect) {ts.p.selarrrow =[];setHeadCheckBox(false);}
 				ts.p.savedRow = [];
 			}
-			if(ts.p.scroll) {emptyRows(ts.grid.bDiv,true, false);}
+			if(ts.p.scroll) {emptyRows.call(ts, true, false);}
 			if (opts && opts.page) {
 				var page = opts.page;
 				if (page > ts.p.lastpage) { page = ts.p.lastpage; }
@@ -2454,6 +2466,7 @@ $.fn.jqGrid = function( pin ) {
 			} else {
 				ts.grid.populate();
 			}
+			if(ts.p._inlinenav===true) {$(ts).jqGrid('showAddEditButtons');}
 			return false;
 		})
 		.dblclick(function(e) {
@@ -2925,8 +2938,8 @@ $.jgrid.extend({
 					for(i = gi+si+ni; i < t.p.colModel.length;i++){
 						cm = t.p.colModel[i];
 						nm = cm.name;
-						lcdata[nm] = cm.formatter && typeof(cm.formatter) === 'string' && cm.formatter == 'date' ? $.unformat.date.call(t,data[nm],cm) : data[nm];
-						v = t.formatter( rowid, $.jgrid.getAccessor(data,nm), i, data, 'edit');
+						lcdata[nm] = data[nm];
+						v = t.formatter( rowid, $.jgrid.getAccessor(data,nm), i, data );
 						prp = t.formatCol(i,1,v, data, rowid, true);
 						row[row.length] = "<td role=\"gridcell\" "+prp+">"+v+"</td>";
 					}
@@ -3045,14 +3058,19 @@ $.jgrid.extend({
 						}
 					});
 					if($t.p.footerrow) { $("tr.footrow td:eq("+i+")", $t.grid.sDiv).css("display", show); }
-					cw = this.widthOrg? this.widthOrg: parseInt(this.width,10);
-					if(show === "none") {$t.p.tblwidth -= cw+brd;} else {$t.p.tblwidth += cw+brd;}
+					cw =  parseInt(this.width,10);
+					if(show === "none") {
+						$t.p.tblwidth -= cw+brd;
+					} else {
+						$t.p.tblwidth += cw+brd;
+					}
 					this.hidden = !sw;
 					fndh=true;
 					$($t).triggerHandler("jqGridShowHideCol", [sw,this.name,i]);
 				}
 			});
 			if(fndh===true) {
+				if($t.p.shrinkToFit === true && !isNaN($t.p.height)) { $t.p.tblwidth += parseInt($t.p.scrollOffset,10);}
 				$($t).jqGrid("setGridWidth",$t.p.shrinkToFit === true ? $t.p.tblwidth : $t.p.width );
 			}
 			if( gh )  {
@@ -3123,7 +3141,8 @@ $.jgrid.extend({
 				shrink=$t.p.shrinkToFit;
 			}
 			if(isNaN(nwidth)) {return;}
-			else { nwidth = parseInt(nwidth,10); $t.grid.width = $t.p.width = nwidth;}
+			nwidth = parseInt(nwidth,10); 
+			$t.grid.width = $t.p.width = nwidth;
 			$("#gbox_"+$.jgrid.jqID($t.p.id)).css("width",nwidth+"px");
 			$("#gview_"+$.jgrid.jqID($t.p.id)).css("width",nwidth+"px");
 			$($t.grid.bDiv).css("width",nwidth+"px");
@@ -3139,7 +3158,7 @@ $.jgrid.extend({
 			if(shrink===true) {
 				$.each($t.p.colModel, function() {
 					if(this.hidden===false){
-						cw = this.widthOrg? this.widthOrg: parseInt(this.width,10);
+						cw = this.widthOrg;
 						initwidth += cw+brd;
 						if(this.fixed) {
 							gw += cw+brd;
@@ -3162,7 +3181,7 @@ $.jgrid.extend({
 				var cle = $t.grid.cols.length >0;
 				$.each($t.p.colModel, function(i) {
 					if(this.hidden === false && !this.fixed){
-						cw = this.widthOrg? this.widthOrg: parseInt(this.width,10);
+						cw = this.widthOrg;
 						cw = Math.round(aw*cw/($t.p.tblwidth-brd*vc-gw));
 						if (cw < 0) { return; }
 						this.width =cw;

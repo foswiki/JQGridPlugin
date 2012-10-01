@@ -26,7 +26,8 @@ JSSOURCE=\
    grid.postext.js\
    grid.tbltogrid.js\
    grid.jqueryui.js\
-   grid.filter.js
+   grid.filter.js \
+   grid.addons.js
 
 -include Makefile.include
 

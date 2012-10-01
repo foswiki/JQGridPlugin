@@ -140,8 +140,9 @@
     }
   };
 
+  $(function() {
+    $('div.contextMenu').hide();
+  });
+
 })(jQuery);
 
-$(function() {
-  $('div.contextMenu').hide();
-});

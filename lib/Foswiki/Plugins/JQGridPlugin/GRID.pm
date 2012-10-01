@@ -58,7 +58,7 @@ sub new {
   my $this = bless($class->SUPER::new( 
     $session,
     name => 'Grid',
-    version => '4.3.3',
+    version => '4.4.0',
     author => 'Tony Tomov',
     homepage => 'http://www.trirand.com/blog/',
     puburl => '%PUBURLPATH%/%SYSTEMWEB%/JQGridPlugin',

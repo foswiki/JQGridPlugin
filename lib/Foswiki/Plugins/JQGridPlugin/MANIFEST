@@ -16,6 +16,7 @@ pub/System/JQGridPlugin/css/Makefile 0644
 pub/System/JQGridPlugin/css/ui.jqgrid.css 0644
 pub/System/JQGridPlugin/css/ui.multiselect.css 0644
 pub/System/JQGridPlugin/grid.base.js 0644
+pub/System/JQGridPlugin/grid.addons.js 0644
 pub/System/JQGridPlugin/grid.celledit.js 0644
 pub/System/JQGridPlugin/grid.common.js 0644
 pub/System/JQGridPlugin/grid.custom.js 0644

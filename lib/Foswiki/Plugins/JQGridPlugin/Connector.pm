@@ -17,6 +17,7 @@ package Foswiki::Plugins::JQGridPlugin::Connector;
 
 use strict;
 use warnings;
+use Encode ();
 
 =begin TML
 
@@ -93,32 +94,16 @@ sub fromUtf8 {
   my $charset = $Foswiki::cfg{Site}{CharSet};
   return $string if $charset =~ /^utf-?8$/i;
 
-  if ($] < 5.008) {
-
-    # use Unicode::MapUTF8 for Perl older than 5.8
-    require Unicode::MapUTF8;
-    if (Unicode::MapUTF8::utf8_supported_charset($charset)) {
-      return Unicode::MapUTF8::from_utf8({ -string => $string, -charset => $charset });
-    } else {
-      print STDERR 'Warning: Conversion from $encoding no supported, ' . 'or name not recognised - check perldoc Unicode::MapUTF8'."\n";
-      return $string;
-    }
+  my $encoding = Encode::resolve_alias($charset);
+  if (not $encoding) {
+    print STDERR 'Warning: Conversion to "' . $charset . '" not supported, or name not recognised - check ' . '"perldoc Encode::Supported"'."\n";;
+    return $string;
   } else {
 
-    # good Perl version, just use Encode
-    require Encode;
-    import Encode;
-    my $encoding = Encode::resolve_alias($charset);
-    if (not $encoding) {
-      print STDERR 'Warning: Conversion to "' . $charset . '" not supported, or name not recognised - check ' . '"perldoc Encode::Supported"'."\n";;
-      return $string;
-    } else {
-
-      # converts to $charset, generating HTML NCR's when needed
-      my $octets = $string;
-      $octets = Encode::decode('utf-8', $string) unless utf8::is_utf8($string);
-      return Encode::encode($encoding, $octets, 0);
-    }
+    # converts to $charset, generating HTML NCR's when needed
+    my $octets = $string;
+    $octets = Encode::decode('utf-8', $string);
+    return Encode::encode($encoding, $octets, 0);
   }
 }
 

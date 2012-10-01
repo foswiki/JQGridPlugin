@@ -171,6 +171,7 @@ Custom grid connectors must process the following parameters:
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order --> |
+|  01 Oct 2012: | (2.20) upgraded to jqgrid-4.4.0 |
 |  12 Jun 2012: | (2.10) upgraded to jqgrid-4.3.3 |
 |  18 May 2012: | (2.03) GRID macro now passes _connectorparam parameters to the grid connector; \
                          Added !ExternalConnectors configure parameter. (Foswiki:Main/KipLubliner) |
