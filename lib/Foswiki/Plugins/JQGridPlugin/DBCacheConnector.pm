@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 # 
-# Copyright (C) 2009-2011 Michael Daum, http://michaeldaumconsulting.com
+# Copyright (C) 2009-2013 Michael Daum, http://michaeldaumconsulting.com
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ use warnings;
 
 use Foswiki::Plugins::JQGridPlugin::FoswikiConnector ();
 use Foswiki::Plugins::DBCachePlugin ();
+use Foswiki::OopsException ();
 use Foswiki::Form ();
 use POSIX ();
 use Error qw(:try);
@@ -169,7 +170,16 @@ sub search {
     my $fieldDef;
     $form = $topicObj->fastget($form) if $form;
     $form = $form->fastget("name") if $form;
-    $form = new Foswiki::Form($this->{session}, $params{web}, $form) if $form;
+    if ($form) {
+      # catch an no_form_def oops
+      try {
+        $form = new Foswiki::Form($this->{session}, $params{web}, $form);
+      } catch Foswiki::OopsException with {
+        my $error = shift;
+        #print STDERR "error: $error\n";
+        $form = undef;
+      };
+    }
 
     my $line = "<row id='$params{web}.$topic'>\n";
     foreach my $columnName (@selectedColumns) {

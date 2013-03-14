@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2009-2011 Michael Daum, http://michaeldaumconsulting.com
+# Copyright (C) 2009-2013 Michael Daum, http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,8 +16,8 @@ package Foswiki::Plugins::JQGridPlugin;
 use strict;
 use warnings;
 
-our $VERSION = '$Rev$';
-our $RELEASE = '2.20';
+our $VERSION = '2.21';
+our $RELEASE = '2.21';
 our $SHORTDESCRIPTION = 'jQuery grid widget for Foswiki';
 our $NO_PREFS_IN_TOPIC = 1;
 our $doInit = 0;
