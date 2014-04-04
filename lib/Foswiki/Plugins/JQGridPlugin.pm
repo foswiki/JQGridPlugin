@@ -31,7 +31,7 @@ sub initPlugin {
   Foswiki::Plugins::JQueryPlugin::registerPlugin('grid', 'Foswiki::Plugins::JQGridPlugin::GRID');
 
   Foswiki::Func::registerTagHandler('GRID', \&handleGrid);
-  Foswiki::Func::registerRESTHandler('gridconnector', \&restGridConnector);
+  Foswiki::Func::registerRESTHandler('gridconnector', \&restGridConnector, authenticate => 0);
 
   my $selector = Foswiki::Func::getPreferencesValue('JQGRIDPLUGIN_TABLE2GRID');# || '.foswikiTable';
 
