@@ -27,10 +27,10 @@ use Error qw(:try);
 
 our @ISA = qw( Foswiki::Plugins::JQGridPlugin::FoswikiConnector );
 
-use constant DEBUG => 0; # toggle me
+use constant TRACE => 0; # toggle me
 
 sub writeDebug {
-  print STDERR "- SolrConnector - $_[0]\n" if DEBUG;
+  print STDERR "- SolrConnector - $_[0]\n" if TRACE;
 }
 
 =begin TML
@@ -189,8 +189,12 @@ HERE
         my $oldFieldName = $fieldDef->{name};
         $fieldDef->{name} .= int( rand(10000) ) + 1;
 
-        $value = $fieldDef->renderForDisplay('$value', $value, undef, $web, $topic);
-        $value = Foswiki::Func::expandCommonVariables($value, $topic, $web);
+        if ($fieldDef->can("getDisplayValue")) {
+          $cell = $fieldDef->getDisplayValue($cell);
+        } else {
+          $cell = $fieldDef->renderForDisplay('$value', $cell, undef, $params{web}, $topic);
+        }
+        $cell = Foswiki::Func::expandCommonVariables($cell, $topic, $params{web});
 
         # restore original name in form definition to prevent sideeffects
         $fieldDef->{name} = $oldFieldName;

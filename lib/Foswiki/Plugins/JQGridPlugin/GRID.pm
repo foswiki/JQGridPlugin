@@ -21,6 +21,7 @@ use Foswiki::Plugins::JQueryPlugin ();
 use Foswiki::Plugins::JQueryPlugin::Plugin ();
 use Foswiki::Plugins::JQueryPlugin::Plugins ();
 use Foswiki::Form ();
+use Foswiki::OopsException ();
 use Error qw(:try);
 use Digest::MD5 ();
 
@@ -232,7 +233,14 @@ HERE
         push @selectedFields, $fieldName;
       }
     } else {
-      my $form = new Foswiki::Form($session, $theFormWeb, $theForm);
+      my $form;
+      my $error;
+      try {
+        $form = new Foswiki::Form($session, $theFormWeb, $theForm);
+      } catch Foswiki::OopsException with {
+        $error = "<div class='foswikiAlert'>ERROR: form $theFormWeb.$theForm not found.</div>";
+      };
+      return $error if $error;
       @selectedFields = map {$_->{name}} @{$form->getFields()} if $form;
     }
 
@@ -286,7 +294,7 @@ HERE
       # formatter
       my $formatter = $params->{$fieldName.'_formatter'};
       if ($formatter) {
-        push @colModel, "formater:'$formatter'";
+        push @colModel, "formatter:'$formatter'";
 
 
       } else {

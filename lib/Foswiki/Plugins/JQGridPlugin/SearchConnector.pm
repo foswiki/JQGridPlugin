@@ -23,10 +23,10 @@ use Error qw(:try);
 
 our @ISA = qw( Foswiki::Plugins::JQGridPlugin::FoswikiConnector );
 
-use constant DEBUG => 0; # toggle me
+use constant TRACE => 0; # toggle me
 
 sub writeDebug {
-  print STDERR "- SearchConnector - $_[0]\n" if DEBUG;
+  print STDERR "- SearchConnector - $_[0]\n" if TRACE;
 }
 
 =begin TML

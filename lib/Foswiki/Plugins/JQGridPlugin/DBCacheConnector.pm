@@ -27,10 +27,10 @@ use Error qw(:try);
 
 our @ISA = qw( Foswiki::Plugins::JQGridPlugin::FoswikiConnector );
 
-use constant DEBUG => 0; # toggle me
+use constant TRACE => 0; # toggle me
 
 sub writeDebug {
-  print STDERR "- DBCacheConnector - $_[0]\n" if DEBUG;
+  print STDERR "- DBCacheConnector - $_[0]\n" if TRACE;
 }
 
 =begin TML
@@ -55,10 +55,8 @@ sub new {
     'Modified' => 'info.date',
     'info.date' => 'Changed', 
     'Changed' => 'info.date',
-    'info.author' => 'By', 
     'By' => 'info.author',
-    'info.author' => 'Author', 
-    'Author' => 'info.author'
+    'Author' => 'info.author',
   };
 
   return $this;
@@ -82,7 +80,7 @@ sub restHandleSearch {
   my $columns = Foswiki::Plugins::JQGridPlugin::Connector::urlDecode($request->param('columns') || '');
   foreach my $columnName (split(/\s*,\s*/, $columns)) {
     my $values = $request->param($columnName);
-    next unless $values;
+    next unless defined $values && $values ne '';
 
     my $propertyName = $this->column2Property($columnName);
     my @filterquery;
@@ -184,7 +182,7 @@ sub search {
     my $line = "<row id='$params{web}.$topic'>\n";
     foreach my $columnName (@selectedColumns) {
       my $propertyName = $this->column2Property($columnName);
-      my $cell = $db->expandPath($topicObj, $propertyName); # SMELL: use the core's QUERY
+      my $cell = $db->expandPath($topicObj, $propertyName); 
 
       # try to render it for display
       $fieldDef = $form->getField($propertyName) if $form;
@@ -195,7 +193,11 @@ sub search {
         my $oldFieldName = $fieldDef->{name};
         $fieldDef->{name} .= int( rand(10000) ) + 1;
 
-        $cell = $fieldDef->renderForDisplay('$value', $cell, undef, $params{web}, $topic);
+        if ($fieldDef->can("getDisplayValue")) {
+          $cell = $fieldDef->getDisplayValue($cell);
+        } else {
+          $cell = $fieldDef->renderForDisplay('$value', $cell, undef, $params{web}, $topic);
+        }
         $cell = Foswiki::Func::expandCommonVariables($cell, $topic, $params{web});
 
         # restore original name in form definition to prevent sideeffects
