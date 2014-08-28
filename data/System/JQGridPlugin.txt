@@ -171,6 +171,7 @@ Custom grid connectors must process the following parameters:
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order --> |
+|  28 Aug 2014: | (2.31) fully specify REST security |
 |  11 Apr 2014: | (2.30) work around different styles of inconsistencies in =renderForDisplay= across foswiki core releases |
 |  04 Apr 2014: | (2.22) flag rest handlers that don't require authentication |
 |  14 Mar 2013: | (2.21) be robust stumbling over topics that lost their form definition |

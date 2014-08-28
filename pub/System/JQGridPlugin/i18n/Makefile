@@ -40,3 +40,5 @@ TARGET=\
 
 -include ../Makefile.include
 
+clean:
+	rm $(TARGET) *.gz

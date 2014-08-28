@@ -16,8 +16,8 @@ package Foswiki::Plugins::JQGridPlugin;
 use strict;
 use warnings;
 
-our $VERSION = '2.30';
-our $RELEASE = '2.30';
+our $VERSION = '2.31';
+our $RELEASE = '2.31';
 our $SHORTDESCRIPTION = 'jQuery grid widget for Foswiki';
 our $NO_PREFS_IN_TOPIC = 1;
 our $doInit = 0;
@@ -34,7 +34,11 @@ sub initPlugin {
   Foswiki::Plugins::JQueryPlugin::registerPlugin('grid', 'Foswiki::Plugins::JQGridPlugin::GRID');
 
   Foswiki::Func::registerTagHandler('GRID', \&handleGrid);
-  Foswiki::Func::registerRESTHandler('gridconnector', \&restGridConnector, authenticate => 0);
+  Foswiki::Func::registerRESTHandler('gridconnector', \&restGridConnector, 
+    authenticate => 0,
+    validate => 0,
+    http_allow => 'GET,POST',
+  );
 
   my $selector = Foswiki::Func::getPreferencesValue('JQGRIDPLUGIN_TABLE2GRID');# || '.foswikiTable';
 

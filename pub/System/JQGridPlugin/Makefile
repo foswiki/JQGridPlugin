@@ -1,4 +1,4 @@
-FOSWIKI_ROOT?=~/foswiki/trunk/core
+FOSWIKI_ROOT?=~/foswiki/core
 TARGET=jquery.jqgrid.js jquery.jqgrid.init.js
 SUBDIRS=i18n css
 
