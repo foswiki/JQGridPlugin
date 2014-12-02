@@ -291,45 +291,46 @@ HERE
         $doneSearchOption = 1;
       }
 
-      # formatter
-      my $formatter = $params->{$fieldName.'_formatter'};
-      if ($formatter) {
-        push @colModel, "formatter:'$formatter'";
-
-
-      } else {
-        if ($fieldName =~ /^(Date|Changed|Modified|info.date|info.createdate)$/) {
-          push @colModel, "formatter:'date'";
-          push @colModel, "formatoptions: {srcformat: 's', newformat: 'd M Y - H:i'}";
-          push @colModel, "sorttype:'date'";
-        }
-        if ($fieldName =~ /^(Topic|TopicTitle)$/) {
-          push @colModel, "formatter:'topic'";
-        }
-        if ($fieldName =~ /(Image|Photo)$/) {
-          push @colModel, "formatter:'image'";
-          push @colModel, "search:false" unless $doneSearchOption;
-        }
-      }
-
       # format
       my $format = $params->{$fieldName.'_format'};
       my $templateId; # added to the format opts below
       if (defined $format) {
 
-        # load the tmpl module
-        Foswiki::Plugins::JQueryPlugin::createPlugin("tmpl");
+        # load the render module
+        Foswiki::Plugins::JQueryPlugin::createPlugin("render");
         
-        $templateId = "jqgrid_tmpl_".Digest::MD5::md5_hex($format);
-        push @colModel, "formatter:'tmpl'";
+        $templateId = "jqgrid_render_".Digest::MD5::md5_hex($format);
+        push @colModel, "formatter:'render'";
 
         Foswiki::Func::addToZone("head", $templateId, <<"EOT");
-<script id="$templateId" type="text/x-jquery-tmpl">  
-<div class='foswikiHidden cellValue'>\${value}</div>
+<script id="$templateId" type="text/x-jsrender">  
+<div class='foswikiHidden cellValue'>{{:value}}</div>
 $format
 </script>
 EOT
-      } 
+      }  else {
+
+        # formatter
+        my $formatter = $params->{$fieldName.'_formatter'};
+        if ($formatter) {
+          push @colModel, "formatter:'$formatter'";
+
+
+        } else {
+          if ($fieldName =~ /^(Date|Changed|Modified|info.date|info.createdate)$/) {
+            push @colModel, "formatter:'date'";
+            push @colModel, "formatoptions: {srcformat: 's', newformat: 'd M Y - H:i'}";
+            push @colModel, "sorttype:'date'";
+          }
+          if ($fieldName =~ /^(Topic|TopicTitle)$/) {
+            push @colModel, "formatter:'topic'";
+          }
+          if ($fieldName =~ /(Image|Photo)$/) {
+            push @colModel, "formatter:'image'";
+            push @colModel, "search:false" unless $doneSearchOption;
+          }
+        }
+      }
 
       # format options
       my $formatOpts = $params->{$fieldName.'_formatoptions'};

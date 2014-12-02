@@ -86,14 +86,14 @@ When [[Foswiki:Extesions/ImagePlugin][ImagePlugin]] is installed, each Image/Pho
 ---++ Examples
 %IF{
   "{AuthScripts}=~'\brest\b'"
-  then="<blockquote class='foswikiHelp'>
+  then="<div class='foswikiHelp'>
     $percntX$percnt Users of this wiki need to be logged in to use %TOPIC%.
 
 If guests are to make use of %TOPIC% without being logged in, remove the =rest= script from ={AuthScripts}= in [[%SCRIPTURLPATH{"configure"}%#Login$SecurityAndAuthentication][configure]] under Security and Authentication -> Login. See also: [[%SYSTEMWEB%.UserAuthentication][UserAuthentication]]
     $percntIF{
       \"NOT context authenticated\"
       then=\"$n$dollarpercntX$dollarpercnt You are not logged in, so the examples below will not work\"
-    }$percnt</blockquote>"
+    }$percnt</div>"
 }%
 *Users*, demonstrating customised columns:
 %TWISTY{showlink="Code..."}%
@@ -171,6 +171,7 @@ Custom grid connectors must process the following parameters:
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | <!-- versions below in reverse order --> |
+|  02 Dec 2014: | (2.40) moving from jquery.tmpl to jsrender |
 |  28 Aug 2014: | (2.31) fully specify REST security |
 |  11 Apr 2014: | (2.30) work around different styles of inconsistencies in =renderForDisplay= across foswiki core releases |
 |  04 Apr 2014: | (2.22) flag rest handlers that don't require authentication |

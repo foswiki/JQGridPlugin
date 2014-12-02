@@ -4496,7 +4496,7 @@ jQuery(function($) {
     target = "", 
     url, 
     topic = opts.rowId.replace(/\./, '/'),
-    viewUrl = foswiki.getPreference("SCRIPTURLPATH")+'/view';
+    viewUrl = foswiki.getScriptUrlPath("view");
 
     if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
       op = $.extend({},op,opts.colModel.formatoptions);
@@ -4516,8 +4516,8 @@ jQuery(function($) {
       return $.fn.fmatter.defaultFormat(cellVal,opts);
     }
   };
-  /* requires jquery.tmpl from http://api.jquery.com/tmpl */
-  $.fn.fmatter.tmpl = function(cellVal, opts, rowData) {
+  /* requires jsrender from http://www.jsviews.com/ */
+  $.fn.fmatter.render = function(cellVal, opts, rowData) {
     var data = $.extend({
           id: opts.rowId,
           value: cellVal
@@ -4536,10 +4536,9 @@ jQuery(function($) {
       return $.fn.fmatter.defaultFormat(cellVal, opts);
     }
 
-    return $("#"+data.template).tmpl(data)
-      .appendTo("<div />").parent()[0].innerHTML;
+    return $("#"+data.template).render(data);
   };
-  $.fn.fmatter.tmpl.unformat = function(cellText, opts, cellElem) {
+  $.fn.fmatter.render.unformat = function(cellText, opts, cellElem) {
     return $(cellElem).find(".cellValue:first")[0].innerHTML;
   };
 });
