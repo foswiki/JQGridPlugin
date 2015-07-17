@@ -3,7 +3,7 @@
 # ---+++ Connectors
 # **STRING 50**
 # Default connector used when no other <code>connector</code> parameter is specified to the <code>%GRID</code> macro.
-$Foswiki::cfg{JQGridPlugin}{DefaultConnector} = 'search';
+$Foswiki::cfg{JQGridPlugin}{DefaultConnector} = 'dbcache';
 
 # **STRING 50**
 # Implementation handling the default <code>search</code> connector based on Foswiki's standard <code>%SEARCH</code>
