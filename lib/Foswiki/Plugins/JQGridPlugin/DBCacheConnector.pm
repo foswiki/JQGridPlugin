@@ -139,15 +139,14 @@ sub search {
   my $db = Foswiki::Plugins::DBCachePlugin::getDB($params{web});
   throw Error::Simple("can't load dbcache") unless defined $db;
   
-
   my @result = ();
   my @selectedColumns = split(/\s*,\s*/, $params{columns});
 
   my $sort = $this->column2Property($params{sort});
-  my ($topicNames, $hits, $msg) = $db->dbQuery($params{query}, undef, $sort, $params{reverse});
-  return '' unless $topicNames;
+  my $hits = $db->dbQuery($params{query}, undef, $sort, $params{reverse});
+  return '' unless $hits;
 
-  my $count = scalar(@$topicNames);
+  my $count = $hits->count;
   my $totalPages = POSIX::ceil($count / $params{rows});
 
   my $page = $params{page};
@@ -159,11 +158,10 @@ sub search {
 
   my $limit = $start + $params{rows};
 
-  my $index = 0;
-  foreach my $topic (@$topicNames) {
+  my $index = $hits->skip($start);
+  while (my $topicObj = $hits->next) {
     $index++;
-    next if $index <= $start;
-    my $topicObj = $hits->{$topic};
+    my $topic = $topicObj->fastget("topic");
     my $form = $topicObj->fastget("form");
     my $fieldDef;
     $form = $topicObj->fastget($form) if $form;

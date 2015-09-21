@@ -1,5 +1,6 @@
-%META:TOPICINFO{author="micha" comment="save topic" date="1436976367" format="1.1" version="2"}%
+%META:TOPICINFO{author="ProjectContributor" comment="topic" date="1436976367" format="1.1" version="1"}%
 ---+ %TOPIC%
+%$SHORTDESCRIPTION%
 
 %STARTSECTION{"summary"}%
 jqGrid is an Ajax-enabled !JavaScript control that provides solutions for
@@ -160,17 +161,12 @@ Custom grid connectors must process the following parameters:
 
 %$INSTALL_INSTRUCTIONS%
 
----++ Plugin Info
-<!--
-   * Set SHORTDESCRIPTION = %$SHORTDESCRIPTION%
--->
+---++ Dependencies
+%$DEPENDENCIES%
 
-|  Author(s): | Michael Daum |
-|  Copyright: | 2009-2015 Michael Daum http://michaeldaumconsulting.com |
-|  License: | GPL |
-|  Release: | %$RELEASE% |
-|  Version: | %$VERSION% |
-|  Change History: | <!-- versions below in reverse order --> |
+---++ Change History
+
+%TABLE{columnwidths="7em" tablewidth="100%"}%
 |  17 Jul 2015: | (2.41) default to =dbcache= connector now as it is the only one really working; fixed example in docu; fixed grid resizer |
 |  02 Dec 2014: | (2.40) moving from jquery.tmpl to jsrender |
 |  28 Aug 2014: | (2.31) fully specify REST security |
@@ -204,7 +200,14 @@ Custom grid connectors must process the following parameters:
                         added field-specific options (title, resizable, align, width, search); \
                         ongoing work on colmodel |
 |  26 Mar 2010: | initial release, externalized from Foswiki:Extensions/JQueryPlugin |
-|  Dependencies: | %$DEPENDENCIES% |
-|  Home: | Foswiki:Extensions/%TOPIC% |
-|  Support: | Foswiki:Support/%TOPIC% |
 
+%META:FORM{name="PackageForm"}%
+%META:FIELD{name="Author" title="Author" value="Michael Daum"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2009-2015 Michael Daum http://michaeldaumconsulting.com"}%
+%META:FIELD{name="Version" title="Version" value="%$VERSION%"}%
+%META:FIELD{name="Release" title="Release" value="%$RELEASE%"}%
+%META:FIELD{name="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
+%META:FIELD{name="Repository" value="https://github.com/foswiki/JQGridPlugin"}%
+%META:FIELD{name="Home" value="http://foswiki.org/Extensions/JQGridPlugin"}%
+%META:FIELD{name="Support" value="http://foswiki.org/Support/JQGridPlugin"}%
+%META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/JQGridPlugin"}%
