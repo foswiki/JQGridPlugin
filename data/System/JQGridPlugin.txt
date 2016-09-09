@@ -174,7 +174,7 @@ Custom grid connectors must process the following parameters:
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
-|  09 Sep 2016: | (2.50) bringing column mapping in line with each other; fixed <nop>SolrConnector |
+|  09 Sep 2016: | (2.60) bringing column mapping in line with each other; fixed <nop>SolrConnector |
 |  17 Jul 2015: | (2.41) default to =dbcache= connector now as it is the only one really working; fixed example in docu; fixed grid resizer |
 |  02 Dec 2014: | (2.40) moving from jquery.tmpl to jsrender |
 |  28 Aug 2014: | (2.31) fully specify REST security |

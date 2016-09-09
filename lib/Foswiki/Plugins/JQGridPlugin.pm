@@ -16,7 +16,7 @@ package Foswiki::Plugins::JQGridPlugin;
 use strict;
 use warnings;
 
-our $VERSION = '2.50';
+our $VERSION = '2.60';
 our $RELEASE = '09 Sep 2016';
 our $SHORTDESCRIPTION = 'jQuery grid widget for Foswiki';
 our $NO_PREFS_IN_TOPIC = 1;
