@@ -1,6 +1,6 @@
 %META:TOPICINFO{author="ProjectContributor" comment="topic" date="1436976367" format="1.1" version="1"}%
 ---+ %TOPIC%
-%$SHORTDESCRIPTION%
+%FORMFIELD{"Description"}%
 
 %STARTSECTION{"summary"}%
 jqGrid is an Ajax-enabled !JavaScript control that provides solutions for
@@ -67,6 +67,7 @@ render a grid of topics matching the given query
 | =onSelectRow= | event handler triggered when a row is selected | |
 | =onSelectAll= | event handler triggered when all rows selected at once | |
 | =gridComplete= | event handler triggered when the grid is loaded | |
+
 ---++ Special columns
 
 Normally, the data and the way it is displayed in a GRID is specified by the !DataForm definition the GRID expression points to.
@@ -74,10 +75,16 @@ However, there's a set of additional properties of a topic that can be displayed
 parameter to %GRID and are mapped to the actual property as follows:
 
 | *Colname* | *Data* | *Displayed* |
-| Topic | topic name | link to topic |
-| Modified, Changed | time when the topic has been changed recently | standard date format |
-| By, Author | author of the last modification | link to author's homepage |
+| Author, By | author of the last modification | link to author's profile page |
+| Create Author, Creator | author that created the initial revision of the topic | link to author's profile page |
+| Created, Create Date | date when the initial revision was created | standard date format |
+| Form | the name of a <nop>DataForm being attached | |
 | Image, Photo | formfields of that name | displayed as html &lt;img&gt; tag where the data is used as src link ||
+| Modified, Changed | time when the topic has been changed recently | standard date format |
+| Topic | topic name | link to topic |
+| Title, TopicTitle | title of the topic | string |
+| Workflow | workflow state of the topic | string |
+
 When [[Foswiki:Extensions/FlexFormPlugin][FlexFormPlugin]] is installed, each cell is rendered using
 =%RENDERFORDISPLAY= expression.
 
@@ -167,6 +174,7 @@ Custom grid connectors must process the following parameters:
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
+|  09 Sep 2016: | (2.50) bringing column mapping in line with each other; fixed <nop>SolrConnector |
 |  17 Jul 2015: | (2.41) default to =dbcache= connector now as it is the only one really working; fixed example in docu; fixed grid resizer |
 |  02 Dec 2014: | (2.40) moving from jquery.tmpl to jsrender |
 |  28 Aug 2014: | (2.31) fully specify REST security |
@@ -203,11 +211,11 @@ Custom grid connectors must process the following parameters:
 
 %META:FORM{name="PackageForm"}%
 %META:FIELD{name="Author" title="Author" value="Michael Daum"}%
-%META:FIELD{name="Copyright" title="Copyright" value="2009-2015 Michael Daum http://michaeldaumconsulting.com"}%
-%META:FIELD{name="Version" title="Version" value="%$VERSION%"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2009-2016 Michael Daum http://michaeldaumconsulting.com"}%
+%META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
+%META:FIELD{name="Home" title="Home" value="https://foswiki.org/Extensions/JQGridPlugin"}%
+%META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
 %META:FIELD{name="Release" title="Release" value="%$RELEASE%"}%
-%META:FIELD{name="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
-%META:FIELD{name="Repository" value="https://github.com/foswiki/JQGridPlugin"}%
-%META:FIELD{name="Home" value="http://foswiki.org/Extensions/JQGridPlugin"}%
-%META:FIELD{name="Support" value="http://foswiki.org/Support/JQGridPlugin"}%
 %META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/JQGridPlugin"}%
+%META:FIELD{name="Support" title="Support" value="https://foswiki.org/Support/JQGridPlugin"}%
+%META:FIELD{name="Version" title="Version" value="%$VERSION%"}%

@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 # 
-# Copyright (C) 2009-2015 Michael Daum, http://michaeldaumconsulting.com
+# Copyright (C) 2009-2016 Michael Daum, http://michaeldaumconsulting.com
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -48,15 +48,25 @@ sub new {
 
   # maps column names to accessors to the actual property being displayed
   $this->{propertyMap} = {
-    'topic' => 'Topic', 
-    'Topic' => 'topic',
-    'TopicTitle' => 'topictitle',
-    'info.date' => 'Modified', 
-    'Modified' => 'info.date',
-    'info.date' => 'Changed', 
-    'Changed' => 'info.date',
-    'By' => 'info.author',
     'Author' => 'info.author',
+    'By' => 'info.author',
+#    'Category' => 'Category',
+    'Changed' => 'info.date',
+    'Create Author' => 'createauthor',
+    'Create Date' => 'createdate',
+    'Created' => 'createdate',
+    'Creator' => 'createauthor',
+    'Form' => 'form',
+    'Modified' => 'info.date',
+#    'Size' => 'size',
+#    'State' => 'state',
+#    'Tag' => 'tag',
+    'Title' => 'topictitle',
+    'TopicTitle' => 'topictitle',
+#    'TopicType' => 'TopicType',
+    'Topic' => 'topic',
+    'Web' => 'web',
+    'Workflow' => 'workflow.name',
   };
 
   return $this;

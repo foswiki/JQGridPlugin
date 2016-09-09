@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 # 
-# Copyright (C) 2009-2015 Michael Daum, http://michaeldaumconsulting.com
+# Copyright (C) 2009-2016 Michael Daum, http://michaeldaumconsulting.com
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@ sub new {
   my $this = {
     session => $session,
     propertyMap => {},
+    sortPropertyMap => {},
   };
 
   return bless($this, $class);
@@ -77,6 +78,13 @@ sub column2Property {
 
   return unless defined $columnName;
   return $this->{propertyMap}{$columnName} || $columnName;
+}
+
+sub column2SortProperty {
+  my ($this, $columnName) = @_;
+
+  return unless defined $columnName;
+  return $this->{sortPropertyMap}{$columnName} || $this->column2Property($columnName) || $columnName;
 }
 
 

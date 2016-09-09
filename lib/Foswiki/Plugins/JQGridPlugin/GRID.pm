@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 # 
-# Copyright (C) 2009-2015 Michael Daum, http://michaeldaumconsulting.com
+# Copyright (C) 2009-2016 Michael Daum, http://michaeldaumconsulting.com
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -317,7 +317,7 @@ EOT
 
 
         } else {
-          if ($fieldName =~ /^(Date|Changed|Modified|info.date|info.createdate)$/) {
+          if ($fieldName =~ /^(Date|Changed|Modified|Created)$/) {
             push @colModel, "formatter:'date'";
             push @colModel, "formatoptions: {srcformat: 's', newformat: 'd M Y - H:i'}";
             push @colModel, "sorttype:'date'";
@@ -348,7 +348,7 @@ EOT
 
       # edit
       if ($theEdit eq 'on') {
-        if ($fieldName =~ /^(Changed|Modified|Author|info.date|info.author|Topic|topic)$/) {
+        if ($fieldName =~ /^(Changed|Modified|Author|Creator|Create Date|createauthor|createdate|info.date|info.author|Topic|topic)$/) {
           push @colModel, "editable:false";
         } else {
           push @colModel, "editable:true";

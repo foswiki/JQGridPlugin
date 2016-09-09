@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 # 
-# Copyright (C) 2009-2015 Michael Daum, http://michaeldaumconsulting.com
+# Copyright (C) 2009-2016 Michael Daum, http://michaeldaumconsulting.com
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,7 +31,7 @@ sub writeDebug {
 
 =begin TML
 
----+ package Foswiki::Plugins::JQGridPlugin::DBCacheConnector
+---+ package Foswiki::Plugins::JQGridPlugin::SearchConnector
 
 implements the grid connector interface using the standard SEARCH interface
 
@@ -123,9 +123,10 @@ sub restHandleSearch {
 }
 
 sub column2SortProperty {
-  my ($this, $column) = @_;
+  my ($this, $columnName) = @_;
 
-  return $this->{sortPropertyMap}{$column} || "formfield($column)";
+  return unless defined $columnName;
+  return $this->{sortPropertyMap}{$columnName} || $this->column2Property($columnName) || "formfield($columnName)";
 }
 
 =begin TML

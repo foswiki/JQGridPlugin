@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 # 
-# Copyright (C) 2011-2015 Michael Daum, http://michaeldaumconsulting.com
+# Copyright (C) 2011-2016 Michael Daum, http://michaeldaumconsulting.com
 # 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -48,23 +48,30 @@ sub new {
 
   # maps column names to accessors to the actual property being displayed
   $this->{propertyMap} = {
-    'Topic' => 'topic',
-    'Web' => 'web',
-    'TopicTitle' => 'title',
-    'By' => 'author',
-    'Modified' => 'date',
-    'Changed' => 'date',
     'Author' => 'author',
-    'Created' => 'createdate',
-    'Create Date' => 'createdate',
-    'Creater' => 'createauthor',
-    'Create Author' => 'createauthor',
-    'TopicType' => 'field_TopicType_lst',
-    'Form' => 'form',
+    'By' => 'author',
     'Category' => 'category',
-    'Tag' => 'tag',
-    'State' => 'state',
+    'Changed' => 'date',
+    'Create Author' => 'createauthor',
+    'Create Date' => 'createdate',
+    'Created' => 'createdate',
+    'Creator' => 'createauthor',
+    'Form' => 'form',
+    'Modified' => 'date',
     'Size' => 'size',
+    'State' => 'state',
+    'Tag' => 'tag',
+    'Title' => 'title',
+    'TopicTitle' => 'title',
+    'Topic' => 'topic',
+    'TopicType' => 'field_TopicType_lst',
+    'Web' => 'web',
+    'Workflow' => 'field_WorkflowState_s',
+  };
+
+  $this->{sortPropertyMap} = {
+    'Title' => 'title_search',
+    'TopicTitle' => 'title_search',
   };
 
   return $this;
@@ -100,7 +107,7 @@ sub restHandleSearch {
 
   my $columns = Foswiki::Plugins::JQGridPlugin::Connector::urlDecode($request->param('columns') || '');
   foreach my $columnName (split(/\s*,\s*/, $columns)) {
-    my $propertyName = $this->column2Property($columnName);
+    my $propertyName = $this->column2SortProperty($columnName);
     my $values = $request->param($columnName);
     next unless $values;
 
@@ -177,8 +184,8 @@ HERE
       @values = $doc->values_for("field_".$propertyName."_dt") unless @values;
       next unless @values;
 
-      my $value = join(", ", @values);
-      $value = $searcher->fromUtf8($value);
+      my $cell = join(", ", @values);
+      #$cell = $searcher->fromUtf8($cell);
 
       # try to render it for display
       $fieldDef = $form->getField($columnName) if $form;
@@ -192,15 +199,15 @@ HERE
         if ($fieldDef->can("getDisplayValue")) {
           $cell = $fieldDef->getDisplayValue($cell);
         } else {
-          $cell = $fieldDef->renderForDisplay('$value', $cell, undef, $params{web}, $topic);
+          $cell = $fieldDef->renderForDisplay('$value', $cell, undef, $web, $topic);
         }
-        $cell = Foswiki::Func::expandCommonVariables($cell, $topic, $params{web});
+        $cell = Foswiki::Func::expandCommonVariables($cell, $topic, $web);
 
         # restore original name in form definition to prevent sideeffects
         $fieldDef->{name} = $oldFieldName;
       }
 
-      $line .= '<cell name="'.$columnName.'"><![CDATA[' . $value . ']]></cell>' . "\n"; 
+      $line .= '<cell name="'.$columnName.'"><![CDATA[' . $cell . ']]></cell>' . "\n"; 
     }
 
     $line .= "</row>\n";
