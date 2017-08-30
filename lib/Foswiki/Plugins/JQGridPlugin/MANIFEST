@@ -1,3 +1,4 @@
+!noci
 data/System/JQGridPlugin.txt 0644
 lib/Foswiki/Plugins/JQGridPlugin/Config.spec 0644
 lib/Foswiki/Plugins/JQGridPlugin/Connector.pm 0644

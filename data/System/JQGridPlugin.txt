@@ -174,6 +174,7 @@ Custom grid connectors must process the following parameters:
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
+|  30 Aug 2017: | (2.61) don't echo invalid parameters in error messages |
 |  09 Sep 2016: | (2.60) bringing column mapping in line with each other; fixed <nop>SolrConnector |
 |  17 Jul 2015: | (2.41) default to =dbcache= connector now as it is the only one really working; fixed example in docu; fixed grid resizer |
 |  02 Dec 2014: | (2.40) moving from jquery.tmpl to jsrender |
@@ -211,7 +212,7 @@ Custom grid connectors must process the following parameters:
 
 %META:FORM{name="PackageForm"}%
 %META:FIELD{name="Author" title="Author" value="Michael Daum"}%
-%META:FIELD{name="Copyright" title="Copyright" value="2009-2016 Michael Daum http://michaeldaumconsulting.com"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2009-2017 Michael Daum http://michaeldaumconsulting.com"}%
 %META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
 %META:FIELD{name="Home" title="Home" value="https://foswiki.org/Extensions/JQGridPlugin"}%
 %META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
